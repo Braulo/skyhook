@@ -1,0 +1,31 @@
+{
+  "name": "tyon-auth",
+  "version": "1.0.0",
+  "description": "Auth Server for Tyon Apps",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start:dev":"nodemon ./dist/app.js",
+    "start:tsc":"tsc -w"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Braulo/tyon-auth.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Braulo/tyon-auth/issues"
+  },
+  "homepage": "https://github.com/Braulo/tyon-auth#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "typeorm": "^0.2.34"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.13",
+    "@types/node": "^16.4.3",
+    "nodemon": "^2.0.12"
+  }
+}

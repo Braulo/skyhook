@@ -1,2 +1,2 @@
-# Tyon-Auth
+# Skyhook
 Auth Server for Tyon Apps

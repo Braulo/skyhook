@@ -13,6 +13,9 @@ export class RealmApplication extends BaseEntity {
   @Column()
   clientSecret: string;
 
+  @Column()
+  displayName: string;
+
   @OneToMany(() => User, (user) => user.realmApplication)
   users: User[];
 

@@ -1,12 +1,18 @@
 import express from 'express';
 import { createConnection } from 'typeorm';
 import { realmRouter } from './routers/realm.routes';
+import { realmApplicationsRouter } from './routers/realmApplication.routes';
+import { authRouter } from './routers/auth.routes';
 
 const app = express();
 
 app.use(express.json());
 
 app.use('/api', realmRouter);
+
+app.use('/api', realmApplicationsRouter);
+
+app.use('/api', authRouter);
 
 app.use((_, res) => {
   res.send('Not Found :(');

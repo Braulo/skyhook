@@ -1,3 +1,4 @@
+import { IsEmail } from 'class-validator';
 import {
   BaseEntity,
   Column,
@@ -18,15 +19,19 @@ export class User extends BaseEntity {
   id: string;
 
   @Column()
+  @IsEmail()
   email: string;
 
-  @Column()
+  @Column({
+    // todo
+    // select: false,
+  })
   password: string;
 
   @Column({
     nullable: true,
   })
-  userName: string;
+  username: string;
 
   @Column({
     default: false,

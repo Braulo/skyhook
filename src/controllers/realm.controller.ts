@@ -1,25 +1,77 @@
 import { Request, Response } from 'express';
-import { QueryFailedError } from 'typeorm';
 import { Realm } from '../entities/realm.entity';
 
-const getRealm = (req: Request, res: Response) => {
-  res.send('get Realm');
+// GET => /api/realm
+const getAllRealms = async (req: Request, res: Response) => {
+  const realms: Realm[] = await Realm.find({ relations: ['realmApplications'] });
+  res.status(200).json(realms);
 };
 
-const createRealm = async (req: Request, res: Response) => {
-  const { name } = req.body;
-  const realm = Realm.create({ name });
+// GET => /api/realm/:id
+const getRealmById = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  if (!id) {
+    return res.status(400).json('No id!');
+  }
 
   try {
-    const realmCreated = await realm.save();
-    return res.send(`create Realm ${realmCreated.id}`);
+    const realm = await Realm.findOneOrFail(id, { relations: ['realmApplications'] });
+    return res.status(200).json(realm);
   } catch (error) {
-    return res.send(error.message);
+    return res.status(400).json(error);
   }
 };
 
-const deleteRealm = (req: Request, res: Response) => {
-  res.send('delete Realm');
+// POST => /api/realm
+const createRealm = async (req: Request, res: Response) => {
+  const { name } = req.body;
+
+  if (!name) {
+    return res.status(400).json('No Name');
+  }
+
+  try {
+    const realm = Realm.create({ name });
+    const realmCreated = await Realm.save(realm);
+    return res.status(200).json(realmCreated);
+  } catch (error) {
+    return res.status(400).send(error);
+  }
 };
 
-export { createRealm, deleteRealm, getRealm };
+// DELETE => /api/realm/:id
+const deleteRealmById = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  if (!id) {
+    return res.status(400).json('No id');
+  }
+
+  try {
+    const realm = await Realm.findOneOrFail(id);
+    const removedRealm = await realm.remove();
+
+    return res.status(200).json(removedRealm);
+  } catch (error) {
+    return res.status(400).send(error);
+  }
+};
+
+// PUT => /api/realm/:id
+const updateRealmById = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { name } = req.body;
+
+  try {
+    const realm = await Realm.findOneOrFail(id);
+    realm.name = name || realm.name;
+
+    const updatedRealm = await Realm.save(realm);
+    return res.status(200).json(updatedRealm);
+  } catch (error) {
+    return res.status(400).json(error);
+  }
+};
+
+export { createRealm, deleteRealmById, getAllRealms, updateRealmById, getRealmById };

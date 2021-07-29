@@ -47,19 +47,26 @@ const registerUserInRealmApplication = async (req: Request, res: Response) => {
   }
 };
 
-// POST => /aut/login
+// POST => /auth/login
 const loginUserForRealmApplication = async (req: Request, res: Response) => {
   const { realmApplicationId } = req.params;
   const { email, password } = req.body;
 
   try {
     const realmApplication = await RealmApplication.findOneOrFail(realmApplicationId);
-    const user = await User.findOneOrFail({
+    const user = await User.findOne({
       where: { email, realmApplication },
-      relations: ['realmApplication'],
+      relations: ['realmApplication', 'realmRoles'],
     });
 
+    if (!user) {
+      return res.status(400).json('Email not found');
+    }
+
+    console.log(user);
+
     const doPasswordsMatch = await bcryptjs.compare(password, user.password);
+
     if (!doPasswordsMatch) {
       return res.status(400).json('Wrong Password');
     }
@@ -70,6 +77,9 @@ const loginUserForRealmApplication = async (req: Request, res: Response) => {
         username: user.username,
         userId: user.id,
         realmApplication: user.realmApplication.id,
+        realmRoles: user.realmRoles.map((role) => {
+          return role.name;
+        }),
       },
       realmApplication.clientSecret,
       { expiresIn: '1h' },

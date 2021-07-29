@@ -18,7 +18,7 @@ export const checkUsernameInRealmApplication = async (req: Request, res: Respons
     if (user && user.realmApplication.id === realmApplication.id) {
       return res.status(400).json('Username already taken');
     }
-    next();
+    return next();
   } catch (error) {
     return res.status(400).json(error);
   }
@@ -40,7 +40,7 @@ export const checkEmailInRealmApplication = async (req: Request, res: Response, 
     if (user && user.realmApplication.id === realmApplication.id) {
       return res.status(400).json('Email already taken');
     }
-    next();
+    return next();
   } catch (error) {
     return res.status(400).json(error);
   }

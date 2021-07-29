@@ -6,6 +6,8 @@ import {
   getRealmById,
   updateRealmById,
 } from '../controllers/realm.controller';
+import { isAuth } from '../utils/auth.utils';
+import { checkIfUserIsMasterRealmAdmin } from '../utils/realmRoles.utils';
 
 export const realmRouter = express.Router();
 

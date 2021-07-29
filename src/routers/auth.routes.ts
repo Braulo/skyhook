@@ -5,19 +5,20 @@ import {
   loginUserForRealmApplication,
 } from '../controllers/auth.controller';
 import { checkToken, isAuth } from '../utils/auth.utils';
+import { checkIfUserIsMasterRealmAdmin } from '../utils/realmRoles.utils';
 import { checkEmailInRealmApplication, checkUsernameInRealmApplication } from '../utils/user.utils';
 
 export const authRouter = express.Router();
 
-authRouter.get('/auth', getAllUsers);
+authRouter.get('', isAuth, checkIfUserIsMasterRealmAdmin, getAllUsers);
 
-authRouter.post('/auth/login/:realmApplicationId', loginUserForRealmApplication);
+authRouter.post('/login/:realmApplicationId', loginUserForRealmApplication);
 
 authRouter.post(
-  '/auth/register/:realmApplicationId',
+  '/register/:realmApplicationId',
   checkUsernameInRealmApplication,
   checkEmailInRealmApplication,
   registerUserInRealmApplication,
 );
 
-authRouter.get('/auth/checktoken/:realmApplicationId', checkToken);
+authRouter.get('/checktoken/:realmApplicationId', checkToken);

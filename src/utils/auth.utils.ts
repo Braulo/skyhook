@@ -14,7 +14,11 @@ export const checkToken = async (req: Request, res: Response) => {
     const realmApplication = await RealmApplication.findOneOrFail(realmApplicationId);
     if (authHeader) {
       const decodedToken = jwt.verify(authHeader, realmApplication.clientSecret) as TokenPayload;
-      const user = await User.findOneOrFail(decodedToken.userId);
+      const user = await User.findOneOrFail({
+        where: { id: decodedToken.userId },
+        relations: ['realmRoles'],
+        select: ['id', 'email', 'username', 'emailConfirmed'],
+      });
       // Todo Password is also returned
       return res.status(200).json(user);
     }
@@ -31,14 +35,22 @@ export const isAuth = async (req: Request, res: Response, next: NextFunction) =>
 
   try {
     const realmApplication = await RealmApplication.findOneOrFail(realmApplicationId);
+
     if (authHeader) {
       const decodedToken = jwt.verify(authHeader, realmApplication.clientSecret) as TokenPayload;
-      const user = await User.findOneOrFail({ where: { id: decodedToken.userId }, relations: ['realmApplications'] });
+      const user = await User.findOneOrFail({
+        where: { id: decodedToken.userId },
+        relations: ['realmRoles'],
+        select: ['id', 'email', 'username', 'emailConfirmed'],
+      });
+
       (req as RequestSkyHook).user = user;
-      next();
+      return next();
     }
     return res.status(400).json('No Auth Header/JWT');
   } catch (error) {
+    console.log(error);
+
     return res.status(400).json(error);
   }
 };

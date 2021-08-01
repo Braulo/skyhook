@@ -12,13 +12,14 @@ export const authRouter = express.Router();
 
 authRouter.get('', isAuth, checkIfUserIsMasterRealmAdmin, getAllUsers);
 
-authRouter.post('/login/:realmApplicationId', loginUserForRealmApplication);
+// authRouter.post('/login/:realmApplicationId', loginUserForRealmApplication);
+authRouter.post('/login', loginUserForRealmApplication);
 
 authRouter.post(
-  '/register/:realmApplicationId',
+  '/register',
   checkUsernameInRealmApplication,
   checkEmailInRealmApplication,
   registerUserInRealmApplication,
 );
 
-authRouter.get('/checktoken/:realmApplicationId', checkToken);
+authRouter.get('/checktoken', checkToken);

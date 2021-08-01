@@ -3,11 +3,12 @@ import { Realm } from '../entities/realm.entity';
 
 // GET => /api/realm
 const getAllRealms = async (req: Request, res: Response) => {
-  const realms: Realm[] = await Realm.find({ relations: ['realmApplications'] });
+  const realms: Realm[] = await Realm.find({ relations: ['realmApplications', 'realmRoles'] });
   res.status(200).json(realms);
 };
 
 // GET => /api/realm/:id
+// ToDo
 const getRealmById = async (req: Request, res: Response) => {
   const { id } = req.params;
 
@@ -42,14 +43,14 @@ const createRealm = async (req: Request, res: Response) => {
 
 // DELETE => /api/realm/:id
 const deleteRealmById = async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const { id: realmId } = req.params;
 
-  if (!id) {
+  if (!realmId) {
     return res.status(400).json('No id');
   }
 
   try {
-    const realm = await Realm.findOneOrFail(id);
+    const realm = await Realm.findOneOrFail(realmId);
     const removedRealm = await realm.remove();
 
     return res.status(200).json(removedRealm);
@@ -60,11 +61,11 @@ const deleteRealmById = async (req: Request, res: Response) => {
 
 // PUT => /api/realm/:id
 const updateRealmById = async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const { id: realmId } = req.params;
   const { name } = req.body;
 
   try {
-    const realm = await Realm.findOneOrFail(id);
+    const realm = await Realm.findOneOrFail(realmId);
     realm.name = name || realm.name;
 
     const updatedRealm = await Realm.save(realm);

@@ -7,11 +7,11 @@ import { RequestSkyHook } from '../models/requestSkyhook';
 
 // Checks if the JWT is Valid by decoding it with the Client-Secret if valid: returns the User;
 export const checkToken = async (req: Request, res: Response) => {
-  const { realmApplicationId } = req.params;
+  const clientId = req.query.clientId as string;
   const authHeader = req.headers.authorization;
 
   try {
-    const realmApplication = await RealmApplication.findOneOrFail(realmApplicationId);
+    const realmApplication = await RealmApplication.findOneOrFail(clientId);
     if (authHeader) {
       const decodedToken = jwt.verify(authHeader, realmApplication.clientSecret) as TokenPayload;
       const user = await User.findOneOrFail({
@@ -19,7 +19,6 @@ export const checkToken = async (req: Request, res: Response) => {
         relations: ['realmRoles'],
         select: ['id', 'email', 'username', 'emailConfirmed'],
       });
-      // Todo Password is also returned
       return res.status(200).json(user);
     }
     return res.status(400).json('No Auth Header/JWT');
@@ -30,11 +29,11 @@ export const checkToken = async (req: Request, res: Response) => {
 
 // Checks if the JWT is Valid by decoding it with the Client-Secret if valid: calls the NextFunction;
 export const isAuth = async (req: Request, res: Response, next: NextFunction) => {
-  const { realmApplicationId } = req.params;
+  const clientId = req.query.clientId as string;
   const authHeader = req.headers.authorization;
 
   try {
-    const realmApplication = await RealmApplication.findOneOrFail(realmApplicationId);
+    const realmApplication = await RealmApplication.findOneOrFail(clientId);
 
     if (authHeader) {
       const decodedToken = jwt.verify(authHeader, realmApplication.clientSecret) as TokenPayload;
@@ -45,12 +44,12 @@ export const isAuth = async (req: Request, res: Response, next: NextFunction) =>
       });
 
       (req as RequestSkyHook).user = user;
+
       return next();
     }
+
     return res.status(400).json('No Auth Header/JWT');
   } catch (error) {
-    console.log(error);
-
     return res.status(400).json(error);
   }
 };

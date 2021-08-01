@@ -16,13 +16,13 @@ const getAllRealmApplications = async (req: Request, res: Response) => {
 
 // GET => /api/realmapplication/:id
 const getRealmApplicationById = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  if (!id) {
+  const realmApplicationId = req.query.realmApplicationId as string;
+  if (!realmApplicationId) {
     return res.status(400).json('Invalid Values');
   }
 
   try {
-    const realmApplication = await RealmApplication.findOneOrFail(id, { relations: ['realm'] });
+    const realmApplication = await RealmApplication.findOneOrFail(realmApplicationId, { relations: ['realm'] });
     return res.status(200).json(realmApplication);
   } catch (error) {
     return res.status(400).json(error);
@@ -31,14 +31,17 @@ const getRealmApplicationById = async (req: Request, res: Response) => {
 
 // POST => /api/realmapplication
 const createRealmApplication = async (req: Request, res: Response) => {
-  const { clientId, clientSecret, realmId } = req.body;
+  const { realmId } = req.params;
+  const { clientId, clientSecret, displayName } = req.body;
+  console.log(clientId, clientSecret, displayName, realmId);
+
   if (!clientId || !clientSecret || !realmId) {
     return res.status(400).json('Invalid values');
   }
 
   try {
     const realm = await Realm.findOneOrFail(realmId);
-    const realmApplication = RealmApplication.create({ clientId, clientSecret, realm });
+    const realmApplication = RealmApplication.create({ clientId, clientSecret, displayName, realm });
 
     const createdRealmApplication = await RealmApplication.save(realmApplication);
     return res.status(200).json(createdRealmApplication);
@@ -49,13 +52,13 @@ const createRealmApplication = async (req: Request, res: Response) => {
 
 // DELETE => /api/realmapplication/:id
 const deleteRealmApplicationById = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  if (!id) {
+  const realmApplicationId = req.query.realmApplicationId as string;
+  if (!realmApplicationId) {
     return res.status(400).json('Invalid Values!');
   }
 
   try {
-    const realmApplication = await RealmApplication.findOneOrFail(id);
+    const realmApplication = await RealmApplication.findOneOrFail(realmApplicationId);
     const deletedRealmApplication = await RealmApplication.remove(realmApplication);
     return res.status(200).json(deletedRealmApplication);
   } catch (error) {
@@ -65,11 +68,11 @@ const deleteRealmApplicationById = async (req: Request, res: Response) => {
 
 // PUT => /api/realmapplication/:id
 const updateRealmApplicationById = async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const realmApplicationId = req.query.realmApplicationId as string;
   const { clientId, clientSecret, displayName } = req.body;
 
   try {
-    const realmApplication = await RealmApplication.findOneOrFail(id);
+    const realmApplication = await RealmApplication.findOneOrFail(realmApplicationId);
 
     realmApplication.clientId = clientId || realmApplication.clientId;
     realmApplication.clientSecret = clientSecret || realmApplication.clientSecret;

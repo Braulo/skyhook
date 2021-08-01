@@ -12,12 +12,21 @@ import { Realm } from './entities/realm.entity';
 const app = express();
 
 app.use(express.json());
+app.get('/api/test', (req: Request, res: Response) => {
+  const { test } = req.query;
+  console.log('YEET', test);
+});
 
 // ToDo Cors setup
 app.use((req: Request, res: Response, next: NextFunction) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  if (req.method == 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+
   next();
 });
 
@@ -41,7 +50,7 @@ const main = async () => {
   try {
     await createConnection();
     const masterRealm = await Realm.findOne('1');
-    if(!masterRealm){
+    if (!masterRealm) {
       createMasterRealm();
     }
     app.listen(3000, () => {

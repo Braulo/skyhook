@@ -12,11 +12,11 @@ const getAllUsers = async (req: Request, res: Response) => {
 
 //GET => /api/user/register/:realmApplicationId
 const registerUserInRealmApplication = async (req: Request, res: Response) => {
-  const { realmApplicationId } = req.params;
+  const clientId = req.query.clientId as string;
   const { email, password, username } = req.body;
 
   try {
-    const realmApplication = await RealmApplication.findOneOrFail(realmApplicationId);
+    const realmApplication = await RealmApplication.findOneOrFail(clientId);
 
     const user = User.create({
       email,
@@ -49,11 +49,11 @@ const registerUserInRealmApplication = async (req: Request, res: Response) => {
 
 // POST => /auth/login
 const loginUserForRealmApplication = async (req: Request, res: Response) => {
-  const { realmApplicationId } = req.params;
+  const clientId = req.query.clientId as string;
   const { email, password } = req.body;
 
   try {
-    const realmApplication = await RealmApplication.findOneOrFail(realmApplicationId);
+    const realmApplication = await RealmApplication.findOneOrFail(clientId);
     const user = await User.findOne({
       where: { email, realmApplication },
       relations: ['realmApplication', 'realmRoles'],
@@ -62,8 +62,6 @@ const loginUserForRealmApplication = async (req: Request, res: Response) => {
     if (!user) {
       return res.status(400).json('Email not found');
     }
-
-    console.log(user);
 
     const doPasswordsMatch = await bcryptjs.compare(password, user.password);
 

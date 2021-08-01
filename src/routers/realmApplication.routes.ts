@@ -9,12 +9,12 @@ import {
 
 export const realmApplicationsRouter = express.Router();
 
-realmApplicationsRouter.get('/realmapplication', getAllRealmApplications);
+realmApplicationsRouter.get('', getAllRealmApplications);
 
-realmApplicationsRouter.get('/realmapplication/:id', getRealmApplicationById);
+realmApplicationsRouter.post(':realmId', createRealmApplication);
 
-realmApplicationsRouter.post('/realmapplication', createRealmApplication);
+realmApplicationsRouter.get('', getRealmApplicationById);
 
-realmApplicationsRouter.delete('/realmapplication/:id', deleteRealmApplicationById);
+realmApplicationsRouter.delete('', deleteRealmApplicationById);
 
-realmApplicationsRouter.put('/realmapplication/:id', updateRealmApplicationById);
+realmApplicationsRouter.put('', updateRealmApplicationById);

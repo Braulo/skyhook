@@ -11,10 +11,10 @@ export const realmApplicationsRouter = express.Router();
 
 realmApplicationsRouter.get('', getAllRealmApplications);
 
-realmApplicationsRouter.post(':realmId', createRealmApplication);
-
 realmApplicationsRouter.get('', getRealmApplicationById);
 
-realmApplicationsRouter.delete('', deleteRealmApplicationById);
+realmApplicationsRouter.delete('/:realmApplicationId', deleteRealmApplicationById);
 
-realmApplicationsRouter.put('', updateRealmApplicationById);
+realmApplicationsRouter.put('/:realmApplicationId', updateRealmApplicationById);
+
+realmApplicationsRouter.post('/:realmId', createRealmApplication);

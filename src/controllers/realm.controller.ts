@@ -43,7 +43,7 @@ const createRealm = async (req: Request, res: Response) => {
 
 // DELETE => /api/realm/:id
 const deleteRealmById = async (req: Request, res: Response) => {
-  const { id: realmId } = req.params;
+  const { realmId } = req.params;
 
   if (!realmId) {
     return res.status(400).json('No id');
@@ -61,7 +61,7 @@ const deleteRealmById = async (req: Request, res: Response) => {
 
 // PUT => /api/realm/:id
 const updateRealmById = async (req: Request, res: Response) => {
-  const { id: realmId } = req.params;
+  const { realmId } = req.params;
   const { name } = req.body;
 
   try {

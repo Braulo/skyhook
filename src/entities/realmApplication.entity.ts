@@ -19,7 +19,9 @@ export class RealmApplication extends BaseEntity {
   @OneToMany(() => User, (user) => user.realmApplication)
   users: User[];
 
-  @ManyToOne(() => Realm, (realm) => realm.realmApplications)
+  @ManyToOne(() => Realm, (realm) => realm.realmApplications, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn()
   realm: Realm;
 }

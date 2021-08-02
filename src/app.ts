@@ -8,14 +8,12 @@ import { isAuth } from './utils/auth.utils';
 import { checkIfUserIsMasterRealmAdmin } from './utils/realmRoles.utils';
 import { createMasterRealm } from './utils/skyhook.utils';
 import { Realm } from './entities/realm.entity';
+import { TokenExpiredError } from 'jsonwebtoken';
 
 const app = express();
 
 app.use(express.json());
-app.get('/api/test', (req: Request, res: Response) => {
-  const { test } = req.query;
-  console.log('YEET', test);
-});
+app.use(express.urlencoded({ extended: true }));
 
 // ToDo Cors setup
 app.use((req: Request, res: Response, next: NextFunction) => {
@@ -37,10 +35,10 @@ app.use('/api/auth', authRouter);
 app.use('/api/realm', isAuth, checkIfUserIsMasterRealmAdmin, realmRouter);
 
 // Realm Applications
-app.use('/api/realmApplication', isAuth, checkIfUserIsMasterRealmAdmin, realmApplicationsRouter);
+app.use('/api/realmapplication', isAuth, checkIfUserIsMasterRealmAdmin, realmApplicationsRouter);
 
 // Realm Roles
-app.use('/api/realmRole', isAuth, checkIfUserIsMasterRealmAdmin, realmRolesRouter);
+app.use('/api/realmrole', isAuth, checkIfUserIsMasterRealmAdmin, realmRolesRouter);
 
 app.use((_, res) => {
   res.send('Not Found :(');

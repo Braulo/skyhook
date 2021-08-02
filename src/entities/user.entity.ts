@@ -41,10 +41,10 @@ export class User extends BaseEntity {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => RealmApplication, (realmApplication) => realmApplication.users)
+  @ManyToOne(() => RealmApplication, (realmApplication) => realmApplication.users, { onDelete: 'CASCADE' })
   @JoinColumn()
   realmApplication: RealmApplication;
 
-  @ManyToMany(() => RealmRole, (realmRole) => realmRole.users)
+  @ManyToMany(() => RealmRole, (realmRole) => realmRole.users, { onDelete: 'CASCADE' })
   realmRoles: RealmRole[];
 }

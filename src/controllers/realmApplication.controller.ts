@@ -33,7 +33,6 @@ const getRealmApplicationById = async (req: Request, res: Response) => {
 const createRealmApplication = async (req: Request, res: Response) => {
   const { realmId } = req.params;
   const { clientId, clientSecret, displayName } = req.body;
-  console.log(clientId, clientSecret, displayName, realmId);
 
   if (!clientId || !clientSecret || !realmId) {
     return res.status(400).json('Invalid values');
@@ -52,7 +51,7 @@ const createRealmApplication = async (req: Request, res: Response) => {
 
 // DELETE => /api/realmapplication/:id
 const deleteRealmApplicationById = async (req: Request, res: Response) => {
-  const realmApplicationId = req.query.realmApplicationId as string;
+  const { realmApplicationId } = req.params;
   if (!realmApplicationId) {
     return res.status(400).json('Invalid Values!');
   }
@@ -68,7 +67,7 @@ const deleteRealmApplicationById = async (req: Request, res: Response) => {
 
 // PUT => /api/realmapplication/:id
 const updateRealmApplicationById = async (req: Request, res: Response) => {
-  const realmApplicationId = req.query.realmApplicationId as string;
+  const { realmApplicationId } = req.params;
   const { clientId, clientSecret, displayName } = req.body;
 
   try {

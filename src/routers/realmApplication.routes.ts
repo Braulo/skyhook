@@ -13,8 +13,8 @@ realmApplicationsRouter.get('', getAllRealmApplications);
 
 realmApplicationsRouter.get('', getRealmApplicationById);
 
-realmApplicationsRouter.delete('/:realmApplicationId', deleteRealmApplicationById);
+realmApplicationsRouter.put('', updateRealmApplicationById);
 
-realmApplicationsRouter.put('/:realmApplicationId', updateRealmApplicationById);
+realmApplicationsRouter.delete('/:realmApplicationId', deleteRealmApplicationById);
 
 realmApplicationsRouter.post('/:realmId', createRealmApplication);

@@ -6,6 +6,6 @@ realmRouter.get('', getAllRealms);
 
 realmRouter.post('', createRealm);
 
-realmRouter.put('/:realmId', updateRealmById);
+realmRouter.put('', updateRealmById);
 
 realmRouter.delete('/:realmId', deleteRealmById);

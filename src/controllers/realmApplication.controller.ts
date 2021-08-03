@@ -67,11 +67,10 @@ const deleteRealmApplicationById = async (req: Request, res: Response) => {
 
 // PUT => /api/realmapplication/:id
 const updateRealmApplicationById = async (req: Request, res: Response) => {
-  const { realmApplicationId } = req.params;
-  const { clientId, clientSecret, displayName } = req.body;
+  const { id, clientId, clientSecret, displayName } = req.body;
 
   try {
-    const realmApplication = await RealmApplication.findOneOrFail(realmApplicationId);
+    const realmApplication = await RealmApplication.findOneOrFail(id);
 
     realmApplication.clientId = clientId || realmApplication.clientId;
     realmApplication.clientSecret = clientSecret || realmApplication.clientSecret;

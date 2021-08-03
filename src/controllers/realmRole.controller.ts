@@ -21,13 +21,14 @@ const addRealmRoleToUserById = async (req: Request, res: Response) => {
   }
 };
 
-// POST => /api/realmRole/realmID
+// POST => /api/realmRole
 const addRealmRoleToRealmById = async (req: Request, res: Response) => {
-  const { realmId } = req.params;
   const { name, displayName } = req.body;
+  const realmId = req.body.realm.id || 0;
 
   try {
     const realm = await Realm.findOneOrFail(realmId);
+
     const realmRole = RealmRole.create({ name, displayName, realm });
 
     const savedRealmRole = await RealmRole.save(realmRole);
@@ -52,4 +53,41 @@ const deleteRealmRoleById = async (req: Request, res: Response) => {
   }
 };
 
-export { addRealmRoleToUserById, addRealmRoleToRealmById, deleteRealmRoleById };
+const updateRealmRoleById = async (req: Request, res: Response) => {
+  const { id, name, displayName } = req.body;
+
+  try {
+    const realmRole = await RealmRole.findOneOrFail(id);
+
+    realmRole.name = name || realmRole.name;
+    realmRole.displayName = displayName || realmRole.name;
+
+    const updatedRealmRole = await RealmRole.save(realmRole);
+
+    return res.status(200).json(updatedRealmRole);
+  } catch (error) {
+    return res.status(400).json(error);
+  }
+};
+
+const getRealmRolesByRealmId = async (req: Request, res: Response) => {
+  const { realmId } = req.params;
+
+  try {
+    const roles = await RealmRole.createQueryBuilder('realmRole')
+      .where('realmRole.realmId =:id', { id: realmId })
+      .getMany();
+
+    return res.status(200).json(roles);
+  } catch (error) {
+    return res.status(400).json(error);
+  }
+};
+
+export {
+  addRealmRoleToUserById,
+  addRealmRoleToRealmById,
+  deleteRealmRoleById,
+  updateRealmRoleById,
+  getRealmRolesByRealmId,
+};

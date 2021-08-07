@@ -35,6 +35,16 @@ export class User extends BaseEntity {
   })
   emailConfirmed: boolean;
 
+  @Column({
+    default: 0,
+  })
+  accessTokenVersion: number;
+
+  @Column({
+    default: 0,
+  })
+  refreshTokenVersion: number;
+
   @CreateDateColumn()
   createdAt: Date;
 

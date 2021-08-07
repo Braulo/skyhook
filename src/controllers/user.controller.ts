@@ -14,8 +14,6 @@ const getAllUsersByRealmId = async (req: Request, res: Response) => {
 
     return res.status(200).json(realmUsers);
   } catch (error) {
-    console.log(error);
-
     return res.status(400).json(error);
   }
 };
@@ -35,4 +33,20 @@ const updateUser = async (req: Request, res: Response) => {
     return res.status(400).json(error);
   }
 };
-export { getAllUsersByRealmId, updateUser };
+
+const logoutUserById = async (req: Request, res: Response) => {
+  const { userId } = req.params;
+
+  try {
+    const user = await User.findOneOrFail(userId);
+    user.accessTokenVersion++;
+    user.refreshTokenVersion++;
+    await User.save(user);
+
+    return res.status(200).json(true);
+  } catch (error) {
+    return res.status(400).json(error);
+  }
+};
+
+export { getAllUsersByRealmId, updateUser, logoutUserById };

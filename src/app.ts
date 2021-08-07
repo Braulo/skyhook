@@ -8,7 +8,6 @@ import { isAuth } from './utils/auth.utils';
 import { checkIfUserIsMasterRealmAdmin } from './utils/realmRoles.utils';
 import { createMasterRealm } from './utils/skyhook.utils';
 import { Realm } from './entities/realm.entity';
-import { TokenExpiredError } from 'jsonwebtoken';
 import { userRouter } from './routers/user.routes';
 
 const app = express();
@@ -41,8 +40,10 @@ app.use('/api/realmapplication', isAuth, checkIfUserIsMasterRealmAdmin, realmApp
 // Realm Roles
 app.use('/api/realmrole', isAuth, checkIfUserIsMasterRealmAdmin, realmRolesRouter);
 
+// User
 app.use('/api/user', isAuth, checkIfUserIsMasterRealmAdmin, userRouter);
 
+// 404
 app.use((_, res) => {
   res.send('Not Found :(');
 });

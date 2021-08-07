@@ -3,6 +3,8 @@ import {
   registerUserInRealmApplication,
   getAllUsers,
   loginUserForRealmApplication,
+  refreshAccessToken,
+  logout,
 } from '../controllers/auth.controller';
 import { checkToken, isAuth } from '../utils/auth.utils';
 import { checkIfUserIsMasterRealmAdmin } from '../utils/realmRoles.utils';
@@ -12,7 +14,10 @@ export const authRouter = express.Router();
 
 authRouter.get('', isAuth, checkIfUserIsMasterRealmAdmin, getAllUsers);
 
-// authRouter.post('/login/:realmApplicationId', loginUserForRealmApplication);
+authRouter.post('/logout', logout);
+
+authRouter.post('/refreshaccesstoken', refreshAccessToken);
+
 authRouter.post('/login', loginUserForRealmApplication);
 
 authRouter.post(

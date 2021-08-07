@@ -63,7 +63,6 @@ const deleteRealmById = async (req: Request, res: Response) => {
 const updateRealmById = async (req: Request, res: Response) => {
   const { realmId } = req.params;
   const { name } = req.body;
-  console.log('update realm', req.body);
 
   try {
     const realm = await Realm.findOneOrFail(realmId);

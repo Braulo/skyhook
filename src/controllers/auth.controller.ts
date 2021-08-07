@@ -4,10 +4,12 @@ import { RealmApplication } from '../entities/realmApplication.entity';
 import { User } from '../entities/user.entity';
 import bcryptjs from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { createAccessToken, createRefreshToken } from '../utils/auth.utils';
+import { RefreshTokenPayload } from '../models/refreshTokenPayload';
 
 // GET => /api/user
 const getAllUsers = async (req: Request, res: Response) => {
-  res.json('yikes');
+  return res.json('yikes');
 };
 
 //GET => /api/user/register/:realmApplicationId
@@ -31,17 +33,10 @@ const registerUserInRealmApplication = async (req: Request, res: Response) => {
     }
 
     const createdUser = await User.save(user);
-    const token = jwt.sign(
-      {
-        email,
-        username,
-        userId: createdUser.id,
-        realmApplication: createdUser.realmApplication.id,
-      },
-      realmApplication.clientSecret,
-      { expiresIn: '1h' },
-    );
-    return res.status(200).json({ createdUser, token });
+    const accessToken = createAccessToken(user);
+    const refreshToken = createRefreshToken(user);
+
+    return res.status(200).json({ createdUser, token: accessToken, refreshToken });
   } catch (error) {
     return res.status(400).json(error);
   }
@@ -69,24 +64,62 @@ const loginUserForRealmApplication = async (req: Request, res: Response) => {
       return res.status(400).json('Wrong Password');
     }
 
-    const token = jwt.sign(
-      {
-        email,
-        username: user.username,
-        userId: user.id,
-        realmApplication: user.realmApplication.id,
-        realmRoles: user.realmRoles.map((role) => {
-          return role.name;
-        }),
-      },
-      realmApplication.clientSecret,
-      { expiresIn: '1h' },
-    );
+    const accessToken = createAccessToken(user);
+    const refreshToken = createRefreshToken(user);
 
-    return res.status(200).json(token);
+    return res.status(200).json({ accessToken, refreshToken });
   } catch (error) {
     return res.status(400).json(error);
   }
 };
 
-export { getAllUsers, registerUserInRealmApplication, loginUserForRealmApplication };
+// POST => /auth/refreshAccessToken?realmApplicationId=foo
+const refreshAccessToken = async (req: Request, res: Response) => {
+  const { refreshToken } = req.body;
+  const clientId = req.query.clientId as string;
+
+  try {
+    const realmApplication = await RealmApplication.findOneOrFail(clientId);
+
+    // ToDo set 'supersecret' password to realmApplication column
+    const decodedToken = jwt.verify(refreshToken, realmApplication.clientSecret + 'supersecret') as RefreshTokenPayload;
+
+    const user = await User.findOneOrFail(decodedToken.userId, {
+      relations: ['realmApplication'],
+    });
+
+    if (decodedToken.tokenVersion !== user.refreshTokenVersion) {
+      return res.status(400).json({ accessToken: '' });
+    }
+
+    const accessToken = createAccessToken(user);
+    return res.status(200).json(accessToken);
+  } catch (error) {
+    return res.status(400).json(error);
+  }
+};
+
+// POST => /auth/logout?realmApplicationId=foo
+const logout = async (req: Request, res: Response) => {
+  const { refreshToken } = req.body;
+  const clientId = req.query.clientId as string;
+
+  try {
+    const realmApplication = await RealmApplication.findOneOrFail(clientId);
+    const decodedToken = jwt.verify(refreshToken, realmApplication.clientSecret) as RefreshTokenPayload;
+
+    const user = await User.findOneOrFail(decodedToken.userId, {
+      relations: ['realmApplication'],
+    });
+
+    user.refreshTokenVersion++;
+    user.accessTokenVersion++;
+
+    await User.save(user);
+    return res.status(200).json(true);
+  } catch (error) {
+    return res.status(400).json(error);
+  }
+};
+
+export { getAllUsers, registerUserInRealmApplication, loginUserForRealmApplication, refreshAccessToken, logout };

@@ -49,4 +49,32 @@ const logoutUserById = async (req: Request, res: Response) => {
   }
 };
 
-export { getAllUsersByRealmId, updateUser, logoutUserById };
+const banUserById = async (req: Request, res: Response) => {
+  const { userId } = req.params;
+
+  try {
+    const user = await User.findOneOrFail(userId);
+    user.banned = true;
+    await User.save(user);
+
+    return res.status(200).json(true);
+  } catch (error) {
+    return res.status(400).json(error);
+  }
+};
+
+const unbanUserById = async (req: Request, res: Response) => {
+  const { userId } = req.params;
+
+  try {
+    const user = await User.findOneOrFail(userId);
+    user.banned = false;
+    await User.save(user);
+
+    return res.status(200).json(true);
+  } catch (error) {
+    return res.status(400).json(error);
+  }
+};
+
+export { getAllUsersByRealmId, updateUser, logoutUserById, banUserById, unbanUserById };

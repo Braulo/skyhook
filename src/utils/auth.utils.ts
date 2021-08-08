@@ -17,17 +17,21 @@ export const checkToken = async (req: Request, res: Response) => {
       const user = await User.findOneOrFail({
         where: { id: decodedAccessToken.userId },
         relations: ['realmRoles'],
-        select: ['id', 'email', 'username', 'emailConfirmed', 'accessTokenVersion'],
+        select: ['id', 'email', 'username', 'emailConfirmed', 'accessTokenVersion', 'banned'],
       });
 
       // Checks the token version
       if (decodedAccessToken.accessTokenVersion !== user.accessTokenVersion) {
-        return res.status(400).json('wrong token version');
+        return res.status(400).json({ message: 'Wrong token version' });
+      }
+
+      if (user.banned) {
+        return res.status(400).json({ message: 'User has been banned for this Realm' });
       }
 
       return res.status(200).json(user);
     }
-    return res.status(400).json('No Auth Header/JWT');
+    return res.status(400).json({ message: 'No Auth Header/JWT' });
   } catch (error) {
     return res.status(400).json(error);
   }
@@ -46,19 +50,23 @@ export const isAuth = async (req: Request, res: Response, next: NextFunction) =>
       const user = await User.findOneOrFail({
         where: { id: decodedAccessToken.userId },
         relations: ['realmRoles'],
-        select: ['id', 'email', 'username', 'emailConfirmed', 'accessTokenVersion'],
+        select: ['id', 'email', 'username', 'emailConfirmed', 'accessTokenVersion', 'banned'],
       });
 
       // Checks the token version
       if (decodedAccessToken.accessTokenVersion !== user.accessTokenVersion) {
-        return res.status(400).json('wrong token version');
+        return res.status(400).json({ message: 'Wrong token version' });
+      }
+
+      if (user.banned) {
+        return res.status(400).json({ message: 'User has been banned for this Realm' });
       }
 
       (req as RequestSkyHook).user = user;
 
       return next();
     }
-    return res.status(400).json('No Auth Header/JWT');
+    return res.status(400).json({ message: 'No Auth Header/JWT' });
   } catch (error) {
     return res.status(400).json(error);
   }
@@ -75,8 +83,7 @@ export const createAccessToken = (user: User) => {
       accessTokenVersion: user.accessTokenVersion,
     },
     user.realmApplication.clientSecret,
-    // Todo expire anpassen
-    { expiresIn: '1h' },
+    { expiresIn: '2m' },
   );
 };
 

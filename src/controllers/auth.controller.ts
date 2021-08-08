@@ -7,11 +7,6 @@ import jwt from 'jsonwebtoken';
 import { createAccessToken, createRefreshToken } from '../utils/auth.utils';
 import { RefreshTokenPayload } from '../models/refreshTokenPayload';
 
-// GET => /api/user
-const getAllUsers = async (req: Request, res: Response) => {
-  return res.json('yikes');
-};
-
 //GET => /api/user/register/:realmApplicationId
 const registerUserInRealmApplication = async (req: Request, res: Response) => {
   const clientId = req.query.clientId as string;
@@ -55,13 +50,17 @@ const loginUserForRealmApplication = async (req: Request, res: Response) => {
     });
 
     if (!user) {
-      return res.status(400).json('Email not found');
+      return res.status(400).json({ message: 'Email not found' });
     }
 
     const doPasswordsMatch = await bcryptjs.compare(password, user.password);
 
     if (!doPasswordsMatch) {
-      return res.status(400).json('Wrong Password');
+      return res.status(400).json({ message: 'Wrong Password' });
+    }
+
+    if (user.banned) {
+      return res.status(400).json({ message: 'User has been banned for this Realm' });
     }
 
     const accessToken = createAccessToken(user);
@@ -82,7 +81,7 @@ const refreshAccessToken = async (req: Request, res: Response) => {
     const realmApplication = await RealmApplication.findOneOrFail(clientId);
 
     // ToDo set 'supersecret' password to realmApplication column
-    const decodedToken = jwt.verify(refreshToken, realmApplication.clientSecret + 'supersecret') as RefreshTokenPayload;
+    const decodedToken = jwt.verify(refreshToken, realmApplication.clientSecret) as RefreshTokenPayload;
 
     const user = await User.findOneOrFail(decodedToken.userId, {
       relations: ['realmApplication'],
@@ -90,6 +89,10 @@ const refreshAccessToken = async (req: Request, res: Response) => {
 
     if (decodedToken.tokenVersion !== user.refreshTokenVersion) {
       return res.status(400).json({ accessToken: '' });
+    }
+
+    if (user.banned) {
+      return res.status(400).json({ message: 'User has been banned for this realm' });
     }
 
     const accessToken = createAccessToken(user);
@@ -122,4 +125,4 @@ const logout = async (req: Request, res: Response) => {
   }
 };
 
-export { getAllUsers, registerUserInRealmApplication, loginUserForRealmApplication, refreshAccessToken, logout };
+export { registerUserInRealmApplication, loginUserForRealmApplication, refreshAccessToken, logout };

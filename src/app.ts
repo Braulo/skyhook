@@ -28,19 +28,19 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
-// User Auth
+// User Auth (For All Skyhook Clients)
 app.use('/api/auth', authRouter);
 
-// Realm
+// Crud Realm (For RealmAdmins Only)
 app.use('/api/realm', isAuth, checkIfUserIsMasterRealmAdmin, realmRouter);
 
-// Realm Applications
+// CRUD Realm Applications (For RealmAdmins Only)
 app.use('/api/realmapplication', isAuth, checkIfUserIsMasterRealmAdmin, realmApplicationsRouter);
 
-// Realm Roles
+// CRUD Realm Roles (For RealmAdmins Only)
 app.use('/api/realmrole', isAuth, checkIfUserIsMasterRealmAdmin, realmRolesRouter);
 
-// User
+// CRUD User (For RealmAdmins Only)
 app.use('/api/user', isAuth, checkIfUserIsMasterRealmAdmin, userRouter);
 
 // 404

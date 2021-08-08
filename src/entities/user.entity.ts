@@ -45,6 +45,9 @@ export class User extends BaseEntity {
   })
   refreshTokenVersion: number;
 
+  @Column({ default: false })
+  banned: boolean;
+
   @CreateDateColumn()
   createdAt: Date;
 

@@ -11,7 +11,7 @@ export const realmApplicationsRouter = express.Router();
 
 realmApplicationsRouter.get('', getAllRealmApplications);
 
-realmApplicationsRouter.get('', getRealmApplicationById);
+realmApplicationsRouter.get('/:realmApplicationId', getRealmApplicationById);
 
 realmApplicationsRouter.put('', updateRealmApplicationById);
 

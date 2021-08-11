@@ -6,9 +6,10 @@ import { authRouter } from './routers/auth.routes';
 import { realmRolesRouter } from './routers/realmRole.routes';
 import { isAuth } from './utils/auth.utils';
 import { checkIfUserIsMasterRealmAdmin } from './utils/realmRoles.utils';
-import { createMasterRealm } from './utils/skyhook.utils';
+import { checkRealmApplicationURL, createMasterRealm } from './utils/skyhook.utils';
 import { Realm } from './entities/realm.entity';
 import { userRouter } from './routers/user.routes';
+import { realmApplicationURLRouter } from './routers/realmApplicationURL.routes';
 
 const app = express();
 
@@ -27,6 +28,8 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 
   next();
 });
+// Check if callback URL/ Host is valid for clientId
+app.use(checkRealmApplicationURL);
 
 // User Auth (For All Skyhook Clients)
 app.use('/api/auth', authRouter);
@@ -43,9 +46,12 @@ app.use('/api/realmrole', isAuth, checkIfUserIsMasterRealmAdmin, realmRolesRoute
 // CRUD User (For RealmAdmins Only)
 app.use('/api/user', isAuth, checkIfUserIsMasterRealmAdmin, userRouter);
 
+// CRUD RealmApplicationURL (For RealmAdminsOnly)
+app.use('/api/realmapplicationurl', isAuth, checkIfUserIsMasterRealmAdmin, realmApplicationURLRouter);
+
 // 404
 app.use((_, res) => {
-  res.send('Not Found :(');
+  res.status(404).send('Not Found :(');
 });
 
 const main = async () => {

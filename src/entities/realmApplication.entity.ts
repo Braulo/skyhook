@@ -1,5 +1,6 @@
 import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Realm } from './realm.entity';
+import { RealmApplicationURL } from './realmApplicationUrl.entity';
 import { User } from './user.entity';
 
 @Entity('RealmApplications')
@@ -24,4 +25,7 @@ export class RealmApplication extends BaseEntity {
   })
   @JoinColumn()
   realm: Realm;
+
+  @OneToMany(() => RealmApplicationURL, (realmApplicationURL) => realmApplicationURL.realmApplication)
+  realmApplicationURLs: string[];
 }

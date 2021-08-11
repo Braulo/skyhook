@@ -16,13 +16,16 @@ const getAllRealmApplications = async (req: Request, res: Response) => {
 
 // GET => /api/realmapplication/:id
 const getRealmApplicationById = async (req: Request, res: Response) => {
-  const realmApplicationId = req.query.realmApplicationId as string;
+  const { realmApplicationId } = req.params;
+
   if (!realmApplicationId) {
     return res.status(400).json('Invalid Values');
   }
 
   try {
-    const realmApplication = await RealmApplication.findOneOrFail(realmApplicationId, { relations: ['realm'] });
+    const realmApplication = await RealmApplication.findOneOrFail(realmApplicationId, {
+      relations: ['realm', 'realmApplicationURLs'],
+    });
     return res.status(200).json(realmApplication);
   } catch (error) {
     return res.status(400).json(error);
@@ -82,6 +85,7 @@ const updateRealmApplicationById = async (req: Request, res: Response) => {
     return res.status(400).json(error);
   }
 };
+
 export {
   getAllRealmApplications,
   createRealmApplication,

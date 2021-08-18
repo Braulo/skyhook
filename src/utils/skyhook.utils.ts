@@ -56,10 +56,14 @@ export const checkRealmApplicationURL = async (req: Request, res: Response, next
 
   try {
     const urlsforRealmApplication = await RealmApplicationURL.find({
+      relations: ['realmApplication'],
       where: {
-        realmApplication: clientId,
+        realmApplication: {
+          clientId,
+        },
       },
     });
+
     const isRealmApplicationUrl = urlsforRealmApplication.find((realmApplicationURL) => {
       return realmApplicationURL.url === requestURL;
     });

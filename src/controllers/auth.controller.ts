@@ -13,7 +13,11 @@ const registerUserInRealmApplication = async (req: Request, res: Response) => {
   const { email, password, username } = req.body;
 
   try {
-    const realmApplication = await RealmApplication.findOneOrFail(clientId);
+    const realmApplication = await RealmApplication.findOneOrFail({
+      where: {
+        clientId,
+      },
+    });
 
     const user = User.create({
       email,
@@ -23,8 +27,13 @@ const registerUserInRealmApplication = async (req: Request, res: Response) => {
     });
 
     const errors = await validate(user);
+
     if (errors.length > 0) {
-      return res.status(400).json(errors);
+      return res.status(400).json(
+        errors.map((vaidationErr) => {
+          return vaidationErr.constraints;
+        }),
+      );
     }
 
     const createdUser = await User.save(user);
@@ -43,7 +52,11 @@ const loginUserForRealmApplication = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   try {
-    const realmApplication = await RealmApplication.findOneOrFail(clientId);
+    const realmApplication = await RealmApplication.findOneOrFail({
+      where: {
+        clientId,
+      },
+    });
     const user = await User.findOne({
       where: { email, realmApplication },
       relations: ['realmApplication', 'realmRoles'],
@@ -78,7 +91,11 @@ const refreshAccessToken = async (req: Request, res: Response) => {
   const clientId = req.query.clientId as string;
 
   try {
-    const realmApplication = await RealmApplication.findOneOrFail(clientId);
+    const realmApplication = await RealmApplication.findOneOrFail({
+      where: {
+        clientId,
+      },
+    });
 
     // ToDo set 'supersecret' password to realmApplication column
     const decodedToken = jwt.verify(refreshToken, realmApplication.clientSecret) as RefreshTokenPayload;
@@ -108,7 +125,11 @@ const logout = async (req: Request, res: Response) => {
   const clientId = req.query.clientId as string;
 
   try {
-    const realmApplication = await RealmApplication.findOneOrFail(clientId);
+    const realmApplication = await RealmApplication.findOneOrFail({
+      where: {
+        clientId,
+      },
+    });
     const decodedToken = jwt.verify(refreshToken, realmApplication.clientSecret) as RefreshTokenPayload;
 
     const user = await User.findOneOrFail(decodedToken.userId, {

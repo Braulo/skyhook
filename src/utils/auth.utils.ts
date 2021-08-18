@@ -11,7 +11,12 @@ export const checkToken = async (req: Request, res: Response) => {
   const authHeader = req.headers.authorization;
 
   try {
-    const realmApplication = await RealmApplication.findOneOrFail(clientId);
+    const realmApplication = await RealmApplication.findOneOrFail({
+      where: {
+        clientId,
+      },
+    });
+
     if (authHeader) {
       const decodedAccessToken = jwt.verify(authHeader, realmApplication.clientSecret) as AccessTokenPayload;
       const user = await User.findOneOrFail({
@@ -43,7 +48,11 @@ export const isAuth = async (req: Request, res: Response, next: NextFunction) =>
   const authHeader = req.headers.authorization;
 
   try {
-    const realmApplication = await RealmApplication.findOneOrFail(clientId);
+    const realmApplication = await RealmApplication.findOneOrFail({
+      where: {
+        clientId,
+      },
+    });
 
     if (authHeader) {
       const decodedAccessToken = jwt.verify(authHeader, realmApplication.clientSecret) as AccessTokenPayload;

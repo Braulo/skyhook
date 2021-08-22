@@ -52,6 +52,7 @@ export const createMasterRealm = async () => {
 
 export const checkRealmApplicationURL = async (req: Request, res: Response, next: NextFunction) => {
   const clientId = req.query.clientId as string;
+  // This is useless because you can easy manipulate the 'Referer attribute'
   const requestURL = req.get('Referer');
 
   try {

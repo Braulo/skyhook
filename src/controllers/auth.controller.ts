@@ -21,7 +21,7 @@ const registerUserInRealmApplication = async (req: Request, res: Response) => {
 
     const user = User.create({
       email,
-      password: await bcryptjs.hash(password, 12),
+      password,
       username,
       realmApplication,
     });
@@ -35,6 +35,8 @@ const registerUserInRealmApplication = async (req: Request, res: Response) => {
         }),
       );
     }
+
+    user.password = await bcryptjs.hash(password, 12);
 
     const createdUser = await User.save(user);
     const accessToken = createAccessToken(user);
@@ -63,7 +65,7 @@ const loginUserForRealmApplication = async (req: Request, res: Response) => {
     });
 
     if (!user) {
-      return res.status(400).json({ message: 'Email not found' });
+      return res.status(400).json({ message: 'E-Mail not found' });
     }
 
     const doPasswordsMatch = await bcryptjs.compare(password, user.password);
@@ -101,7 +103,7 @@ const refreshAccessToken = async (req: Request, res: Response) => {
     const decodedToken = jwt.verify(refreshToken, realmApplication.clientSecret) as RefreshTokenPayload;
 
     const user = await User.findOneOrFail(decodedToken.userId, {
-      relations: ['realmApplication'],
+      relations: ['realmApplication', 'realmRoles'],
     });
 
     if (decodedToken.tokenVersion !== user.refreshTokenVersion) {

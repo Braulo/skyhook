@@ -22,7 +22,9 @@ export class User extends BaseEntity {
   @IsEmail()
   email: string;
 
-  @Column()
+  @Column({
+    nullable: true,
+  })
   @Length(3)
   password: string;
 

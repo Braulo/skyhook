@@ -22,7 +22,9 @@ export class RealmRole extends BaseEntity {
   @Column()
   displayName: string;
 
-  @ManyToOne(() => Realm, (realm) => realm.realmRoles)
+  @ManyToOne(() => Realm, (realm) => realm.realmRoles, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn()
   realm: Realm;
 

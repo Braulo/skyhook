@@ -1,4 +1,5 @@
 import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { ExternalProvider } from './externalProvider.entity';
 import { Realm } from './realm.entity';
 import { RealmApplicationURL } from './realmApplicationUrl.entity';
 import { User } from './user.entity';
@@ -27,5 +28,8 @@ export class RealmApplication extends BaseEntity {
   realm: Realm;
 
   @OneToMany(() => RealmApplicationURL, (realmApplicationURL) => realmApplicationURL.realmApplication)
-  realmApplicationURLs: string[];
+  realmApplicationURLs: RealmApplicationURL[];
+
+  @OneToMany(() => ExternalProvider, (externalProvider) => externalProvider.realmApplication)
+  externalProvider: ExternalProvider[];
 }

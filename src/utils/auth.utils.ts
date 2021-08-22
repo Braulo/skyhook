@@ -83,10 +83,15 @@ export const isAuth = async (req: Request, res: Response, next: NextFunction) =>
 
 // Creates an accessToken for a user (also contains the current access token version)
 export const createAccessToken = (user: User) => {
+  console.log('create acccess toeken', user);
+
   return jwt.sign(
     {
       email: user.email,
       username: user.username,
+      realmRoles: user?.realmRoles?.map((realmRole) => {
+        return realmRole.name;
+      }),
       userId: user.id,
       realmApplication: user.realmApplication.id,
       accessTokenVersion: user.accessTokenVersion,

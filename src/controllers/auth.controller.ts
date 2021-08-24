@@ -157,6 +157,11 @@ const loginExternalUser = async (req: Request, res: Response) => {
       const user = await User.findOneOrFail((req.user as any).user.id, {
         relations: ['realmApplication'],
       });
+
+      if (user.banned) {
+        return res.status(400).json({ message: 'User has been banned for this Realm' });
+      }
+
       const accessToken = createAccessToken(user);
       const refreshToken = createRefreshToken(user);
 

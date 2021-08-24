@@ -29,8 +29,6 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   }
   next();
 });
-// Check if callback URL/ Host is valid for clientId is useless because you can easily change the referer.... maybe just delete this and just work with the cors
-// app.use(checkRealmApplicationURL);
 
 // User Auth (For All Skyhook Clients)
 app.use('/api/auth', authRouter);

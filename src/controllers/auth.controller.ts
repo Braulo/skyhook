@@ -1,11 +1,13 @@
 import { validate } from 'class-validator';
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { RealmApplication } from '../entities/realmApplication.entity';
 import { User } from '../entities/user.entity';
 import bcryptjs from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { createAccessToken, createRefreshToken } from '../utils/auth.utils';
 import { RefreshTokenPayload } from '../models/refreshTokenPayload';
+import { createGoogleStrategy } from '../utils/passport-google-strategy.utils';
+import passport from 'passport';
 
 //GET => /api/user/register/:realmApplicationId
 const registerUserInRealmApplication = async (req: Request, res: Response) => {
@@ -148,4 +150,38 @@ const logout = async (req: Request, res: Response) => {
   }
 };
 
-export { registerUserInRealmApplication, loginUserForRealmApplication, refreshAccessToken, logout };
+// GET => /api/external/google
+const loginExternalUser = async (req: Request, res: Response) => {
+  if (req.user) {
+    try {
+      const user = await User.findOneOrFail((req.user as any).user.id, {
+        relations: ['realmApplication'],
+      });
+      const accessToken = createAccessToken(user);
+      const refreshToken = createRefreshToken(user);
+
+      return res
+        .status(200)
+        .redirect(`${(req.user as any).callbackUrl}?accessToken=${accessToken}&refreshToken=${refreshToken}`);
+    } catch (error) {
+      return res.status(400).json({ message: 'User not found' });
+    }
+  }
+  return res.status(400).send('no user');
+};
+
+const createGoogleAuthStrategy = async (req: Request, res: Response, next: NextFunction) => {
+  // https://medium.com/passportjs/authenticate-using-strategy-instances-49e58d96ec8c
+  const { clientId } = req.query;
+  const strategy = await createGoogleStrategy(clientId as any);
+  passport.authenticate(strategy, { scope: ['profile', 'email'] })(req, res, next);
+};
+
+export {
+  registerUserInRealmApplication,
+  loginUserForRealmApplication,
+  refreshAccessToken,
+  logout,
+  loginExternalUser,
+  createGoogleAuthStrategy,
+};

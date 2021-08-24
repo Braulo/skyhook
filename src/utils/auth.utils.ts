@@ -83,8 +83,6 @@ export const isAuth = async (req: Request, res: Response, next: NextFunction) =>
 
 // Creates an accessToken for a user (also contains the current access token version)
 export const createAccessToken = (user: User) => {
-  console.log('create acccess toeken', user);
-
   return jwt.sign(
     {
       email: user.email,

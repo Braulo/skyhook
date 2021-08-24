@@ -4,7 +4,6 @@ import { RealmRole } from '../entities/realmRole.entity';
 import { User } from '../entities/user.entity';
 import bcryptjs from 'bcryptjs';
 import { RealmApplicationURL } from '../entities/realmApplicationUrl.entity';
-import { NextFunction, Request, Response } from 'express';
 
 export const createMasterRealm = async () => {
   const masterRealm = Realm.create({
@@ -50,33 +49,33 @@ export const createMasterRealm = async () => {
   await RealmApplicationURL.save(realmApplicationURL);
 };
 
-export const checkRealmApplicationURL = async (req: Request, res: Response, next: NextFunction) => {
-  const clientId = req.query.clientId as string;
-  // This is useless because you can easy manipulate the 'Referer attribute'
-  const requestURL = req.get('Referer');
+// export const checkRealmApplicationURL = async (req: Request, res: Response, next: NextFunction) => {
+//   const clientId = req.query.clientId as string;
+//   // This is useless because you can easy manipulate the 'Referer attribute'
+//   const requestURL = req.get('Referer');
 
-  try {
-    const urlsforRealmApplication = await RealmApplicationURL.find({
-      relations: ['realmApplication'],
-      where: {
-        realmApplication: {
-          clientId,
-        },
-      },
-    });
+//   try {
+//     const urlsforRealmApplication = await RealmApplicationURL.find({
+//       relations: ['realmApplication'],
+//       where: {
+//         realmApplication: {
+//           clientId,
+//         },
+//       },
+//     });
 
-    const isRealmApplicationUrl = urlsforRealmApplication.find((realmApplicationURL) => {
-      return realmApplicationURL.url === requestURL;
-    });
+//     const isRealmApplicationUrl = urlsforRealmApplication.find((realmApplicationURL) => {
+//       return realmApplicationURL.url === requestURL;
+//     });
 
-    if (!isRealmApplicationUrl) {
-      return res.status(400).json({
-        message: 'Wrong request URL',
-      });
-    }
+//     if (!isRealmApplicationUrl) {
+//       return res.status(400).json({
+//         message: 'Wrong request URL',
+//       });
+//     }
 
-    next();
-  } catch (error) {
-    return res.status(400).json(error);
-  }
-};
+//     next();
+//   } catch (error) {
+//     return res.status(400).json(error);
+//   }
+// };

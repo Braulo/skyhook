@@ -11,9 +11,12 @@ import { Realm } from './entities/realm.entity';
 import { userRouter } from './routers/user.routes';
 import { realmApplicationURLRouter } from './routers/realmApplicationURL.routes';
 import passport from 'passport';
+import dotenv from 'dotenv';
+import nodemailer from 'nodemailer';
 
 const app = express();
 
+dotenv.config();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(passport.initialize());
@@ -53,15 +56,27 @@ app.use((_, res) => {
   res.status(404).send('Not Found :(');
 });
 
+// Nodemailer
+export const NodeMailerTransporter = nodemailer.createTransport({
+  service: 'hotmail',
+  auth: {
+    user: process.env.SkyhookSupportEmail,
+    pass: process.env.SkyhookSupportPassword,
+  },
+});
+
 const main = async () => {
   try {
     await createConnection();
+
+    // await transporter.sendMail(mailOptions);
+
     const masterRealm = await Realm.findOne('1');
     if (!masterRealm) {
       createMasterRealm();
     }
     app.listen(3000, () => {
-      console.log(`Server Started at: http://localhost:${3000}`);
+      console.log(`Server Started at: http://localhost:${process.env.PORT}`);
     });
   } catch (error) {
     console.error('Error: ', error);

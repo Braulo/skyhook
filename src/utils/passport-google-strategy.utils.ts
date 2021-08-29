@@ -1,8 +1,7 @@
-import passportGoogle, { Profile, VerifyCallback } from 'passport-google-oauth20';
+import { Profile, VerifyCallback, Strategy } from 'passport-google-oauth20';
 import { RealmApplication } from '../entities/realmApplication.entity';
 import passport from 'passport';
 import { User } from '../entities/user.entity';
-const GoogleStrategy = passportGoogle.Strategy;
 
 export const createGoogleStrategy = async (clientId: string) => {
   const realmApplication = await RealmApplication.findOneOrFail({
@@ -13,22 +12,22 @@ export const createGoogleStrategy = async (clientId: string) => {
   });
 
   const googleProviderConfig = realmApplication.externalProvider.find((providerData) => {
-    return (providerData.name = 'Google');
+    return (providerData.name = process.env.GoogleAuthProviderName || 'Google');
   });
 
   const GoogleStrategyConfig = {
     clientID: googleProviderConfig?.key || '',
     clientSecret: googleProviderConfig?.secret || '',
-    callbackURL: `http://localhost:3000/api/auth/external/google?clientId=${clientId}`,
+    callbackURL: `${process.env.GoogleAuthCallbackURI}${clientId}`,
   };
 
   const verifyLogin = async (accessToken: string, refreshToken: string, profile: Profile, done: VerifyCallback) => {
-    const user = await User.findOne({
-      where: {
-        email: profile._json.email,
-        realmApplication,
-      },
-    });
+    const user = await User.createQueryBuilder('Users')
+      .where(`Users.email='${profile._json.email}'`)
+      .orWhere(`Users.externalProviderId='${profile.id}'`)
+      .getOne();
+
+    console.log('omegalull', user);
 
     if (user) {
       return done(null, { user, callbackUrl: realmApplication.realmApplicationURLs[0].url });
@@ -38,6 +37,8 @@ export const createGoogleStrategy = async (clientId: string) => {
       email: profile._json.email,
       username: profile.displayName,
       realmApplication: realmApplication,
+      externalProviderId: profile.id,
+      externalProviderName: process.env.GoogleAuthProviderName || 'Google',
     });
 
     const savedUser = await User.save(newUser).catch((err) => {
@@ -47,7 +48,7 @@ export const createGoogleStrategy = async (clientId: string) => {
     return done(null, { user: savedUser, callbackUrl: realmApplication.realmApplicationURLs[0].url });
   };
 
-  return new GoogleStrategy(GoogleStrategyConfig, verifyLogin);
+  return new Strategy(GoogleStrategyConfig, verifyLogin);
 };
 
 passport.serializeUser((user, cb) => {

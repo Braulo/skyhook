@@ -52,6 +52,16 @@ export class User extends BaseEntity {
   @Column({ default: false })
   banned: boolean;
 
+  @Column({
+    nullable: true,
+  })
+  externalProviderId: string;
+
+  @Column({
+    nullable: true,
+  })
+  externalProviderName: string;
+
   @CreateDateColumn()
   createdAt: Date;
 

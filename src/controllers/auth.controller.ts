@@ -8,6 +8,8 @@ import { createAccessToken, createRefreshToken } from '../utils/auth.utils';
 import { RefreshTokenPayload } from '../models/refreshTokenPayload';
 import { createGoogleStrategy } from '../utils/passport-google-strategy.utils';
 import passport from 'passport';
+import { MailOptions } from 'nodemailer/lib/json-transport';
+import { NodeMailerTransporter } from '../app';
 
 //GET => /api/user/register/:realmApplicationId
 const registerUserInRealmApplication = async (req: Request, res: Response) => {
@@ -182,6 +184,52 @@ const createGoogleAuthStrategy = async (req: Request, res: Response, next: NextF
   passport.authenticate(strategy, { scope: ['profile', 'email'] })(req, res, next);
 };
 
+const forgotPassword = async (req: Request, res: Response, next: NextFunction) => {
+  const { clientId } = req.query;
+  const { email } = req.body;
+  console.log('sadfsd', email, clientId);
+
+  try {
+    // Todo filter for RealmApplication
+    // const user = await User.findOneOrFail({
+    //   where: {
+    //     email,
+    //     // realmApplication: clientId
+    //   },
+    // });
+
+    const user = await User.createQueryBuilder('user')
+      .leftJoinAndSelect('user.realmApplication', 'realmApplication')
+      .where(`realmApplication.clientId = '${clientId}'`)
+      .andWhere(`user.email = '${email}'`)
+      .getOne();
+
+    console.log('test', user);
+
+    if (!user) {
+      return res.status(400).json('no user found!');
+    }
+
+    const mailOptions: MailOptions = {
+      from: process.env.SkyhookSupportEmail,
+      to: user?.email,
+      subject: `[${user.realmApplication.clientId}] Reset Password for ${user?.username}`,
+      text: 'Click here to reset your password',
+      html: '<h1>Click here</h1>',
+    };
+
+    console.log(mailOptions);
+
+    // await NodeMailerTransporter.sendMail(mailOptions);
+    // Todo Password reset jwttoken
+    return res.status(200).json(true);
+  } catch (error) {
+    console.log(error);
+
+    return res.status(400).json(error);
+  }
+};
+
 export {
   registerUserInRealmApplication,
   loginUserForRealmApplication,
@@ -189,4 +237,5 @@ export {
   logout,
   loginExternalUser,
   createGoogleAuthStrategy,
+  forgotPassword,
 };

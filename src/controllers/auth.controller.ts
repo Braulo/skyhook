@@ -184,52 +184,94 @@ const createGoogleAuthStrategy = async (req: Request, res: Response, next: NextF
   passport.authenticate(strategy, { scope: ['profile', 'email'] })(req, res, next);
 };
 
+// Sends the forgot password mail
 const forgotPassword = async (req: Request, res: Response, next: NextFunction) => {
   const { clientId } = req.query;
   const { email } = req.body;
-  console.log('sadfsd', email, clientId);
 
   try {
-    // Todo filter for RealmApplication
-    // const user = await User.findOneOrFail({
-    //   where: {
-    //     email,
-    //     // realmApplication: clientId
-    //   },
-    // });
-
     const user = await User.createQueryBuilder('user')
       .leftJoinAndSelect('user.realmApplication', 'realmApplication')
       .where(`realmApplication.clientId = '${clientId}'`)
+      .leftJoinAndSelect('realmApplication.realmApplicationURLs', 'realmApplicationURLs')
       .andWhere(`user.email = '${email}'`)
       .getOne();
 
-    console.log('test', user);
-
     if (!user) {
-      return res.status(400).json('no user found!');
+      return res.status(400).json(false);
     }
+
+    const resetPasswordToken = jwt.sign(
+      {
+        email: user.email,
+        username: user.username,
+        userId: user.id,
+        realmApplication: user.realmApplication.id,
+        realmApplicationClientId: user.realmApplication.clientId,
+        redirectUrl: user.realmApplication.realmApplicationURLs[0].url,
+      },
+      user.realmApplication.clientSecret + user.password,
+      { expiresIn: '1d' },
+    );
 
     const mailOptions: MailOptions = {
       from: process.env.SkyhookSupportEmail,
       to: user?.email,
       subject: `[${user.realmApplication.clientId}] Reset Password for ${user?.username}`,
       text: 'Click here to reset your password',
-      html: '<h1>Click here</h1>',
+      html: `<a href="${process.env.SkyhookUrl}/api/auth/reset-password/${user.id}?resetPasswordToken=${resetPasswordToken}">Click here to reset you password</a> 
+      <h1>This link is valid for 24h</h1>`,
     };
 
-    console.log(mailOptions);
-
-    // await NodeMailerTransporter.sendMail(mailOptions);
-    // Todo Password reset jwttoken
+    await NodeMailerTransporter.sendMail(mailOptions);
     return res.status(200).json(true);
   } catch (error) {
-    console.log(error);
-
     return res.status(400).json(error);
   }
 };
 
+const getResetPassword = async (req: Request, res: Response) => {
+  const { resetPasswordToken } = req.query as any;
+  const { userid } = req.params;
+
+  try {
+    const user = await User.findOneOrFail(userid, {
+      relations: ['realmApplication'],
+    });
+
+    const decodedResetPasswordToken = jwt.verify(
+      resetPasswordToken,
+      user.realmApplication.clientSecret + user.password,
+    ) as any;
+
+    return res.redirect(
+      `${decodedResetPasswordToken.redirectUrl}/reset-password/${userid}?resetPasswordToken=${resetPasswordToken}`,
+    );
+  } catch (error) {
+    return res.status(400).send('unvalid link');
+  }
+};
+
+const resetPassword = async (req: Request, res: Response) => {
+  const { resetPasswordToken } = req.query as any;
+  const { userid } = req.params;
+  const { password } = req.body;
+  try {
+    const user = await User.findOneOrFail(userid, {
+      relations: ['realmApplication'],
+    });
+
+    jwt.verify(resetPasswordToken, user.realmApplication.clientSecret + user.password) as any;
+
+    user.password = await bcryptjs.hash(password, 12);
+
+    await User.save(user);
+
+    return res.status(200).json(true);
+  } catch (error) {
+    return res.status(400).json(error);
+  }
+};
 export {
   registerUserInRealmApplication,
   loginUserForRealmApplication,
@@ -238,4 +280,6 @@ export {
   loginExternalUser,
   createGoogleAuthStrategy,
   forgotPassword,
+  getResetPassword,
+  resetPassword,
 };

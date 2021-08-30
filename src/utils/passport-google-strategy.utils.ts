@@ -27,8 +27,6 @@ export const createGoogleStrategy = async (clientId: string) => {
       .orWhere(`Users.externalProviderId='${profile.id}'`)
       .getOne();
 
-    console.log('omegalull', user);
-
     if (user) {
       return done(null, { user, callbackUrl: realmApplication.realmApplicationURLs[0].url });
     }

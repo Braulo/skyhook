@@ -7,6 +7,8 @@ import {
   loginExternalUser,
   createGoogleAuthStrategy,
   forgotPassword,
+  getResetPassword,
+  resetPassword,
 } from '../controllers/auth.controller';
 import { checkToken } from '../utils/auth.utils';
 import { checkEmailInRealmApplication, checkUsernameInRealmApplication } from '../utils/user.utils';
@@ -27,6 +29,10 @@ authRouter.post(
 );
 
 authRouter.post('/forgot-password', forgotPassword);
+
+authRouter.get('/reset-password/:userid', getResetPassword);
+
+authRouter.post('/reset-password/:userid', resetPassword);
 
 authRouter.get('/checktoken', checkToken);
 

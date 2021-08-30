@@ -56,7 +56,7 @@ app.use((_, res) => {
   res.status(404).send('Not Found :(');
 });
 
-// Nodemailer
+// Nodemailer setup
 export const NodeMailerTransporter = nodemailer.createTransport({
   service: 'hotmail',
   auth: {
@@ -69,13 +69,11 @@ const main = async () => {
   try {
     await createConnection();
 
-    // await transporter.sendMail(mailOptions);
-
     const masterRealm = await Realm.findOne('1');
     if (!masterRealm) {
       createMasterRealm();
     }
-    app.listen(3000, () => {
+    app.listen(process.env.PORT, () => {
       console.log(`Server Started at: http://localhost:${process.env.PORT}`);
     });
   } catch (error) {

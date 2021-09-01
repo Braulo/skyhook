@@ -1,2 +1,2 @@
 # Operation Skyhook
-Auth Server for Tyon Apps
+Auth Provider for Tyon Apps

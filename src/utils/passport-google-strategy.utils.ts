@@ -4,6 +4,8 @@ import passport from 'passport';
 import { User } from '../entities/user.entity';
 
 export const createGoogleStrategy = async (clientId: string) => {
+  console.log('create test');
+
   const realmApplication = await RealmApplication.findOneOrFail({
     where: {
       clientId,
@@ -14,6 +16,8 @@ export const createGoogleStrategy = async (clientId: string) => {
   const googleProviderConfig = realmApplication.externalProvider.find((providerData) => {
     return (providerData.name = process.env.GoogleAuthProviderName || 'Google');
   });
+
+  console.log('google test', googleProviderConfig);
 
   const GoogleStrategyConfig = {
     clientID: googleProviderConfig?.key || '',

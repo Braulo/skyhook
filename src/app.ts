@@ -13,6 +13,7 @@ import { realmApplicationURLRouter } from './routers/realmApplicationURL.routes'
 import passport from 'passport';
 import dotenv from 'dotenv';
 import nodemailer from 'nodemailer';
+import { realmApplicationExternalProviderRouter } from './routers/externalProvider.routes';
 
 const app = express();
 
@@ -50,6 +51,9 @@ app.use('/api/user', isAuth, checkIfUserIsMasterRealmAdmin, userRouter);
 
 // CRUD RealmApplicationURL (For RealmAdminsOnly)
 app.use('/api/realmapplicationurl', isAuth, checkIfUserIsMasterRealmAdmin, realmApplicationURLRouter);
+
+// CRUD ExternalProvider (For RealmAdminsOnly)
+app.use('/api/externalprovider', isAuth, checkIfUserIsMasterRealmAdmin, realmApplicationExternalProviderRouter);
 
 // 404
 app.use((_, res) => {

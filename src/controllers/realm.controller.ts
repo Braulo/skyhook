@@ -3,7 +3,13 @@ import { Realm } from '../entities/realm.entity';
 
 // GET => /api/realm
 const getAllRealms = async (req: Request, res: Response) => {
-  const realms: Realm[] = await Realm.find({ relations: ['realmApplications', 'realmRoles'] });
+  const realms: Realm[] = await Realm.createQueryBuilder('realm')
+    .leftJoinAndSelect('realm.realmApplications', 'realmApplication')
+    .where(`realmApplication.realmId = realm.id`)
+    .leftJoinAndSelect('realmApplication.externalProvider', 'externalProvider')
+    .leftJoinAndSelect('realm.realmRoles', 'realmRoles')
+    .getMany();
+
   res.status(200).json(realms);
 };
 

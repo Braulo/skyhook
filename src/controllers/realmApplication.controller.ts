@@ -24,7 +24,7 @@ const getRealmApplicationById = async (req: Request, res: Response) => {
 
   try {
     const realmApplication = await RealmApplication.findOneOrFail(realmApplicationId, {
-      relations: ['realm', 'realmApplicationURLs'],
+      relations: ['realm', 'realmApplicationURLs', 'externalProvider'],
     });
     return res.status(200).json(realmApplication);
   } catch (error) {

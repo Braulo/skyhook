@@ -1,8 +1,8 @@
 {
   "type": "mysql",
-  "host": "localhost",
+  "host": "database",
   "port": 3306,
-  "username": "root",
+  "username": "user",
   "password": "password",
   "database": "skyhook",
   "synchronize": true,

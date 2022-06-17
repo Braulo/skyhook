@@ -1,2 +1,2 @@
 # Skyhook
-Basic Auth Server
+Basic multi realm based Auth Server

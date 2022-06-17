@@ -1,2 +1,2 @@
-# Operation Skyhook
+# Skyhook
 Basic Auth Server

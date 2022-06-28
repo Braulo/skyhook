@@ -6,7 +6,7 @@ Just a small server that issues JWT's after a successful authentication. Think o
 This repository contains a multi realm/ multi tenant based auth server written fully in TypeScript with the Expressjs framework. 
 The auth server supports SSO/ SLO, external provider (google/ twitter/ facebook) and basic authentication (username/ password).
 Multiple applications that are running withing the same Realm are considered RealmApplications in this context. 
-Each RealmApplication has an ID and the users associated to the RealmApplication can also use the same credentials to login into other RealmApplications as long as they are withing the same general Realm.
+Each RealmApplication has an clientID and the users associated to the RealmApplication can also use the same credentials to login into other RealmApplications as long as they are withing the same general Realm.
 
 Example: <br>
 Realm => MySuperAwesomeCompany <br>

@@ -8,7 +8,7 @@ The auth server supports SSO/ SLO, external provider (google/ twitter/ facebook)
 Multiple applications that are running withing the same realm are considered RealmApplications in this context. 
 Each RealmApplication has an ID and the users associated to the RealmApplication can also use the same credentials to login into other RealmApplications as long as they are withing the same general Realm.
 
-Example:
+Example: <br>
 Realm => Google <br>
 RealmApplication => GoogleMail, Youtube, GoogleDrive
 

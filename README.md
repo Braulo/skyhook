@@ -29,6 +29,9 @@ RealmApplication => APP1, APP2, APP2, APP4...
 > npm run start
 ```
 
+By Default this will create an admin Realm where you can easily connect to and start creating other realms/ applications. <br>
+Admin Client can be found [here](https://github.com/Braulo/skyhook-admin-client)
+
 ### Deployment
 
 Well just use Docker :)

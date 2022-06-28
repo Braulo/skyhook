@@ -9,8 +9,8 @@ Multiple applications that are running withing the same realm are considered Rea
 Each RealmApplication has an ID and the users associated to the RealmApplication can also use the same credentials to login into other RealmApplications as long as they are withing the same general Realm.
 
 Example: <br>
-Realm => Google <br>
-RealmApplication => GoogleMail, Youtube, GoogleDrive
+Realm => MySuperAwesomeProject <br>
+RealmApplication => Frontend, Microservice2, Microservice3, Microservice4...
 
 ### Good for microservices architecture of if you have multiple services that you need to authenticate with each other. 
 

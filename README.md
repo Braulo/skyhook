@@ -1,9 +1,12 @@
 # Skyhook (Simple multi realm JWT based auth server)
 
+TL;DR
+Just a small server that issues JWT tokens after a successful authentication. Think of it as a self written [keycloak](https://www.keycloak.org/) server (but without really implementing any authentication standards such as OIDC, OAUTH etc...)
+
 This repository contains a multi realm/ multi tenant based auth server written fully in TypeScript with the Expressjs framework. 
-The auth server supports SSO, external provider (google/ twitter/ facebook) and basic authentication (username/ password).
+The auth server supports SSO/ SLO, external provider (google/ twitter/ facebook) and basic authentication (username/ password).
 Multiple applications that are running withing the same realm are considered RealmApplications in this context. 
-Each RealmApplication has an ID and the users associated to the RealmApplication can also use the the credentials to login into other RealmApplications as long as they are withing the same Realm.
+Each RealmApplication has an ID and the users associated to the RealmApplication can also use the same credentials to login into other RealmApplications as long as they are withing the same general Realm.
 
 Example:
 Realm => Google

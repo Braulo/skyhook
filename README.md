@@ -17,7 +17,7 @@ RealmApplication => APP1, APP2, APP2, APP4...
 
 ### Development
 
-1. Intall all node packages
+1. Install all node packages
 
 ```bash
 > npm install

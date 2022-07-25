@@ -1,0 +1,25 @@
+version: '2.1'
+services:
+  database:
+    image: mysql
+    restart: always
+    ports:
+      - '3306:3306'
+    cap_add:
+      - SYS_NICE
+    env_file:
+      - .env
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'localhost:3306']
+  skyhook-server:
+    build: .
+    ports:
+      - '${PORT}:${PORT}'
+    env_file:
+      - .env
+    depends_on:
+      database:
+        condition: service_healthy
+    volumes:
+      - ./:/app
+      - /app/node_modules

@@ -21,7 +21,6 @@
   },
   "homepage": "https://github.com/Braulo/tyon-auth#readme",
   "dependencies": {
-    "@angular/cli": "^12.1.4",
     "bcryptjs": "^2.4.3",
     "class-validator": "^0.13.1",
     "dotenv": "^10.0.0",

@@ -1,5 +1,4 @@
 import express, { NextFunction, Request, Response } from 'express';
-import { createConnection } from 'typeorm';
 import { realmRouter } from './routers/realm.routes';
 import { realmApplicationsRouter } from './routers/realmApplication.routes';
 import { authRouter } from './routers/auth.routes';
@@ -14,6 +13,7 @@ import passport from 'passport';
 import dotenv from 'dotenv';
 import nodemailer from 'nodemailer';
 import { realmApplicationExternalProviderRouter } from './routers/externalProvider.routes';
+import { connection } from './orm-connection';
 
 const app = express();
 
@@ -71,8 +71,7 @@ export const NodeMailerTransporter = nodemailer.createTransport({
 
 const main = async () => {
   try {
-    await createConnection();
-
+    await connection;
     const masterRealm = await Realm.findOne('1');
     if (!masterRealm) {
       createMasterRealm();

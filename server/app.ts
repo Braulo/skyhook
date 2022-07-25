@@ -3,9 +3,9 @@ import { realmRouter } from './routers/realm.routes';
 import { realmApplicationsRouter } from './routers/realmApplication.routes';
 import { authRouter } from './routers/auth.routes';
 import { realmRolesRouter } from './routers/realmRole.routes';
-import { isAuth } from '../utils/auth.utils';
-import { checkIfUserIsMasterRealmAdmin } from '../utils/realmRoles.utils';
-import { createMasterRealm } from '../utils/skyhook.utils';
+import { isAuth } from './utils/auth.utils';
+import { checkIfUserIsMasterRealmAdmin } from './utils/realmRoles.utils';
+import { createMasterRealm } from './utils/skyhook.utils';
 import { Realm } from './entities/realm.entity';
 import { userRouter } from './routers/user.routes';
 import { realmApplicationURLRouter } from './routers/realmApplicationURL.routes';
@@ -14,16 +14,21 @@ import dotenv from 'dotenv';
 import nodemailer from 'nodemailer';
 import { realmApplicationExternalProviderRouter } from './routers/externalProvider.routes';
 import { connection } from './orm-connection';
-
-const app = express();
+import next from 'next';
 
 dotenv.config();
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(passport.initialize());
+
+const dev = process.env.NODE_ENV !== 'production';
+const app = next({ dev });
+const server = express();
+const handle = app.getRequestHandler();
+
+server.use(express.json());
+server.use(express.urlencoded({ extended: true }));
+server.use(passport.initialize());
 
 // ToDo Cors setup
-app.use((req: Request, res: Response, next: NextFunction) => {
+server.use((req: Request, res: Response, next: NextFunction) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE');
@@ -35,29 +40,28 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 });
 
 // User Auth (For All Skyhook Clients)
-app.use('/api/auth', authRouter);
+server.use('/api/auth', authRouter);
 
 // Crud Realm (For RealmAdmins Only)
-app.use('/api/realm', isAuth, checkIfUserIsMasterRealmAdmin, realmRouter);
+server.use('/api/realm', isAuth, checkIfUserIsMasterRealmAdmin, realmRouter);
 
 // CRUD Realm Applications (For RealmAdmins Only)
-app.use('/api/realmapplication', isAuth, checkIfUserIsMasterRealmAdmin, realmApplicationsRouter);
+server.use('/api/realmapplication', isAuth, checkIfUserIsMasterRealmAdmin, realmApplicationsRouter);
 
 // CRUD Realm Roles (For RealmAdmins Only)
-app.use('/api/realmrole', isAuth, checkIfUserIsMasterRealmAdmin, realmRolesRouter);
+server.use('/api/realmrole', isAuth, checkIfUserIsMasterRealmAdmin, realmRolesRouter);
 
 // CRUD User (For RealmAdmins Only)
-app.use('/api/user', isAuth, checkIfUserIsMasterRealmAdmin, userRouter);
+server.use('/api/user', isAuth, checkIfUserIsMasterRealmAdmin, userRouter);
 
 // CRUD RealmApplicationURL (For RealmAdminsOnly)
-app.use('/api/realmapplicationurl', isAuth, checkIfUserIsMasterRealmAdmin, realmApplicationURLRouter);
+server.use('/api/realmapplicationurl', isAuth, checkIfUserIsMasterRealmAdmin, realmApplicationURLRouter);
 
 // CRUD ExternalProvider (For RealmAdminsOnly)
-app.use('/api/externalprovider', isAuth, checkIfUserIsMasterRealmAdmin, realmApplicationExternalProviderRouter);
+server.use('/api/externalprovider', isAuth, checkIfUserIsMasterRealmAdmin, realmApplicationExternalProviderRouter);
 
-// 404
-app.use((_, res) => {
-  res.status(404).send('Not Found :(');
+server.all('*', (req, res) => {
+  return handle(req, res);
 });
 
 // Nodemailer setup
@@ -77,7 +81,8 @@ const main = async () => {
     if (!masterRealm) {
       createMasterRealm();
     }
-    app.listen(process.env.PORT, () => {
+
+    server.listen(process.env.PORT, () => {
       console.log(`Server Started at: http://localhost:${process.env.PORT}`);
     });
   } catch (error) {
@@ -85,4 +90,9 @@ const main = async () => {
   }
 };
 
-main();
+(async () => {
+  try {
+    await app.prepare();
+    await main();
+  } catch (error) {}
+})();

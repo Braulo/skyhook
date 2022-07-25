@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
-import { RealmApplication } from '../server/entities/realmApplication.entity';
+import { RealmApplication } from '../../server/entities/realmApplication.entity';
 import jwt from 'jsonwebtoken';
 import { AccessTokenPayload } from '../models/tokenpayload';
-import { User } from '../server/entities/user.entity';
+import { User } from '../../server/entities/user.entity';
 import { RequestSkyHook } from '../models/requestSkyhook';
 
 // Checks if the JWT is Valid by decoding it with the Client-Secret if valid: returns the User;

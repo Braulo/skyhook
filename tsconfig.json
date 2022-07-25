@@ -2,8 +2,6 @@
   "compilerOptions": {
     "target": "es6",
     "module": "esnext",
-    "outDir": "./dist",
-    "rootDir": "./src",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "lib": ["dom", "dom.iterable", "esnext"],

@@ -9,7 +9,7 @@ import { RefreshTokenPayload } from '../models/refreshTokenPayload';
 import { createGoogleStrategy } from '../utils/passport-google-strategy.utils';
 import passport from 'passport';
 import { MailOptions } from 'nodemailer/lib/json-transport';
-import { NodeMailerTransporter } from '../app';
+import { NodeMailerTransporter } from '..';
 
 //GET => /api/user/register/:realmApplicationId
 const registerUserInRealmApplication = async (req: Request, res: Response) => {

@@ -15,6 +15,7 @@ import nodemailer from 'nodemailer';
 import { realmApplicationExternalProviderRouter } from './routers/externalProvider.routes';
 import { connection } from './orm-connection';
 import next from 'next';
+import 'reflect-metadata';
 
 dotenv.config();
 
@@ -59,6 +60,10 @@ server.use('/api/realmapplicationurl', isAuth, checkIfUserIsMasterRealmAdmin, re
 
 // CRUD ExternalProvider (For RealmAdminsOnly)
 server.use('/api/externalprovider', isAuth, checkIfUserIsMasterRealmAdmin, realmApplicationExternalProviderRouter);
+
+server.use('/test', (req, res) => {
+  return res.json('hoi');
+});
 
 server.all('*', (req, res) => {
   return handle(req, res);

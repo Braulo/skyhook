@@ -1,5 +1,11 @@
 import { createConnection } from 'typeorm';
 import dotenv from 'dotenv';
+import { Realm } from './entities/realm.entity';
+import { ExternalProvider } from './entities/externalProvider.entity';
+import { RealmApplication } from './entities/realmApplication.entity';
+import { RealmApplicationURL } from './entities/realmApplicationUrl.entity';
+import { RealmRole } from './entities/realmRole.entity';
+import { User } from './entities/user.entity';
 dotenv.config();
 
 export const connection = createConnection({
@@ -11,10 +17,10 @@ export const connection = createConnection({
   database: process.env.MYSQL_DATABASE,
   synchronize: true,
   logging: false,
-  entities: ['server/entities/**.ts'],
-  migrations: ['server/migrations/**.ts'],
+  entities: [Realm, ExternalProvider, RealmApplication, RealmApplicationURL, RealmRole, User],
+  migrations: ['dist/migrations/**.js'],
   cli: {
-    entitiesDir: 'src/entities',
-    migrationsDir: 'src/migrations',
+    entitiesDir: '{server,dist}/entities',
+    migrationsDir: '{server,dist}/migrations',
   },
 });

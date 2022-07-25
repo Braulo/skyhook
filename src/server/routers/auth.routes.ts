@@ -10,8 +10,8 @@ import {
   getResetPassword,
   resetPassword,
 } from '../controllers/auth.controller';
-import { checkToken } from '../utils/auth.utils';
-import { checkEmailInRealmApplication, checkUsernameInRealmApplication } from '../utils/user.utils';
+import { checkToken } from '../../utils/auth.utils';
+import { checkEmailInRealmApplication, checkUsernameInRealmApplication } from '../../utils/user.utils';
 
 export const authRouter = express.Router();
 

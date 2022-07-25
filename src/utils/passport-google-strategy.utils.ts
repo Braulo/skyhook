@@ -1,7 +1,7 @@
 import { Profile, VerifyCallback, Strategy } from 'passport-google-oauth20';
-import { RealmApplication } from '../entities/realmApplication.entity';
+import { RealmApplication } from '../server/entities/realmApplication.entity';
 import passport from 'passport';
-import { User } from '../entities/user.entity';
+import { User } from '../server/entities/user.entity';
 
 export const createGoogleStrategy = async (clientId: string) => {
   console.log('create test');

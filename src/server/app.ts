@@ -3,9 +3,9 @@ import { realmRouter } from './routers/realm.routes';
 import { realmApplicationsRouter } from './routers/realmApplication.routes';
 import { authRouter } from './routers/auth.routes';
 import { realmRolesRouter } from './routers/realmRole.routes';
-import { isAuth } from './utils/auth.utils';
-import { checkIfUserIsMasterRealmAdmin } from './utils/realmRoles.utils';
-import { createMasterRealm } from './utils/skyhook.utils';
+import { isAuth } from '../utils/auth.utils';
+import { checkIfUserIsMasterRealmAdmin } from '../utils/realmRoles.utils';
+import { createMasterRealm } from '../utils/skyhook.utils';
 import { Realm } from './entities/realm.entity';
 import { userRouter } from './routers/user.routes';
 import { realmApplicationURLRouter } from './routers/realmApplicationURL.routes';
@@ -72,6 +72,7 @@ export const NodeMailerTransporter = nodemailer.createTransport({
 const main = async () => {
   try {
     await connection;
+
     const masterRealm = await Realm.findOne('1');
     if (!masterRealm) {
       createMasterRealm();

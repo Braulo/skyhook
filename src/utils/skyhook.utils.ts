@@ -1,9 +1,9 @@
-import { Realm } from '../entities/realm.entity';
-import { RealmApplication } from '../entities/realmApplication.entity';
-import { RealmRole } from '../entities/realmRole.entity';
-import { User } from '../entities/user.entity';
+import { Realm } from '../server/entities/realm.entity';
+import { RealmApplication } from '../server/entities/realmApplication.entity';
+import { RealmRole } from '../server/entities/realmRole.entity';
+import { User } from '../server/entities/user.entity';
 import bcryptjs from 'bcryptjs';
-import { RealmApplicationURL } from '../entities/realmApplicationUrl.entity';
+import { RealmApplicationURL } from '../server/entities/realmApplicationUrl.entity';
 
 export const createMasterRealm = async () => {
   const masterRealm = Realm.create({

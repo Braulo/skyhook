@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { RealmApplication } from '../entities/realmApplication.entity';
-import { User } from '../entities/user.entity';
+import { RealmApplication } from '../server/entities/realmApplication.entity';
+import { User } from '../server/entities/user.entity';
 
 // Checks if the username is already taken in RealmApplication
 export const checkUsernameInRealmApplication = async (req: Request, res: Response, next: NextFunction) => {

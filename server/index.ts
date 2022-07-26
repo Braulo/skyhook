@@ -80,7 +80,7 @@ export const NodeMailerTransporter = nodemailer.createTransport({
 
 const main = async () => {
   try {
-    await connection;
+    await connection();
 
     const masterRealm = await Realm.findOne('1');
     if (!masterRealm) {

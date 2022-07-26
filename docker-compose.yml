@@ -1,7 +1,7 @@
 version: '2.1'
 services:
   database:
-    image: mysql
+    image: mysql:8.0
     restart: always
     ports:
       - '3306:3306'
@@ -20,6 +20,3 @@ services:
     depends_on:
       database:
         condition: service_healthy
-    volumes:
-      - ./:/app
-      - /app/node_modules

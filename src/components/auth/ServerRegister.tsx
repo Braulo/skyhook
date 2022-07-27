@@ -2,10 +2,11 @@ import { useState } from 'react';
 import { Formik } from 'formik';
 import Input from '../UI/Input';
 import Button from '../UI/Button';
-import Link from 'next/link';
+import { useAuth } from 'hooks/useAuth';
 
 const ServerRegister = () => {
-  const [loading, setLoading] = useState(false);
+  const { loading, register, error: authError } = useAuth();
+
   return (
     <>
       <Formik
@@ -28,12 +29,15 @@ const ServerRegister = () => {
           }
           return errors;
         }}
-        onSubmit={async ({ email, username, password, passwordRepeat }, { setSubmitting, resetForm }) => {
-          setLoading(true);
-          console.log('submit', email, password, username, passwordRepeat);
+        onSubmit={async ({ email, username, password, passwordRepeat }, { setSubmitting }) => {
+          try {
+            const res = await register(email, username, password);
+            console.log('res', res);
+          } catch (error) {
+            console.log('err', error);
+          }
 
           setSubmitting(false);
-          resetForm();
         }}
       >
         {({ values, errors, touched, handleChange, handleBlur, handleSubmit, isValid }) => (
@@ -76,6 +80,7 @@ const ServerRegister = () => {
               value={values.passwordRepeat}
             />
             {errors.passwordRepeat && touched.passwordRepeat && errors.passwordRepeat}
+            <h1>{authError}</h1>
             <Button type="submit" disabled={!isValid} showSpinner={loading}>
               Register
             </Button>

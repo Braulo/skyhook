@@ -55,6 +55,7 @@ const registerUserInRealmApplication = async (req: Request, res: Response) => {
 // POST => /auth/login
 const loginUserForRealmApplication = async (req: Request, res: Response) => {
   const clientId = req.query.clientId as string;
+
   const { email, password } = req.body;
 
   try {
@@ -63,6 +64,7 @@ const loginUserForRealmApplication = async (req: Request, res: Response) => {
         clientId,
       },
     });
+
     const user = await User.findOne({
       where: { email, realmApplication },
       relations: ['realmApplication', 'realmRoles'],

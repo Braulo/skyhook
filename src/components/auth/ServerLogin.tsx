@@ -1,11 +1,12 @@
-import { useState } from 'react';
 import { Formik } from 'formik';
 import Input from '../UI/Input';
 import Button from '../UI/Button';
 import Link from 'next/link';
+import { useAuth } from 'hooks/useAuth';
 
 const ServerLogin = () => {
-  const [loading, setLoading] = useState(false);
+  const { login, error: authError, loading } = useAuth();
+
   return (
     <>
       <Formik
@@ -22,12 +23,14 @@ const ServerLogin = () => {
           }
           return errors;
         }}
-        onSubmit={async ({ email, password }, { setSubmitting, resetForm }) => {
-          setLoading(true);
+        onSubmit={async ({ email, password }, { setSubmitting }) => {
           console.log('submit', email, password);
+          try {
+            const response = await login(email, password);
+            console.log('res', response);
+          } catch (error) {}
 
           setSubmitting(false);
-          resetForm();
         }}
       >
         {({ values, errors, touched, handleChange, handleBlur, handleSubmit, isValid }) => (
@@ -51,6 +54,7 @@ const ServerLogin = () => {
               value={values.password}
             />
             {errors.password && touched.password && errors.password}
+            <h1>{authError}</h1>
             <div className="self-start mt-4">
               <Link href={'/auth/password/request'} className="self-start mt-4">
                 Forgot password?

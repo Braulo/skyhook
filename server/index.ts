@@ -43,11 +43,10 @@ server.use((req: Request, res: Response, next: NextFunction) => {
 // User Auth (For All Skyhook Clients)
 server.use('/api/auth', authRouter);
 
+server.use('/api/realmapplication', realmApplicationsRouter);
+
 // Crud Realm (For RealmAdmins Only)
 server.use('/api/realm', isAuth, checkIfUserIsMasterRealmAdmin, realmRouter);
-
-// CRUD Realm Applications (For RealmAdmins Only)
-server.use('/api/realmapplication', isAuth, checkIfUserIsMasterRealmAdmin, realmApplicationsRouter);
 
 // CRUD Realm Roles (For RealmAdmins Only)
 server.use('/api/realmrole', isAuth, checkIfUserIsMasterRealmAdmin, realmRolesRouter);
@@ -60,10 +59,6 @@ server.use('/api/realmapplicationurl', isAuth, checkIfUserIsMasterRealmAdmin, re
 
 // CRUD ExternalProvider (For RealmAdminsOnly)
 server.use('/api/externalprovider', isAuth, checkIfUserIsMasterRealmAdmin, realmApplicationExternalProviderRouter);
-
-server.use('/test', (req, res) => {
-  return res.json('hoi');
-});
 
 server.all('*', (req, res) => {
   return handle(req, res);

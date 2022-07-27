@@ -85,11 +85,31 @@ const updateRealmApplicationById = async (req: Request, res: Response) => {
     return res.status(400).json(error);
   }
 };
+const getRealmApplicationByClientId = async (req: Request, res: Response) => {
+  const { clientId } = req.query;
 
+  if (!clientId) {
+    return res.status(400).json('Invalid Values');
+  }
+
+  try {
+    const realmApplication = await RealmApplication.findOneOrFail(
+      { clientId: clientId.toString() },
+      {
+        relations: ['realm', 'realmApplicationURLs', 'externalProvider'],
+      },
+    );
+
+    return res.status(200).json(realmApplication.displayName);
+  } catch (error) {
+    return res.status(400).json(error);
+  }
+};
 export {
   getAllRealmApplications,
   createRealmApplication,
   getRealmApplicationById,
   deleteRealmApplicationById,
   updateRealmApplicationById,
+  getRealmApplicationByClientId,
 };

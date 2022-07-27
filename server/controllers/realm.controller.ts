@@ -29,7 +29,7 @@ const getRealmById = async (req: Request, res: Response) => {
 
   try {
     const realm = await Realm.findOneOrFail(id, { relations: ['realmApplications'] });
-    return res.status(200).json(realm);
+    return res.status(200).json(realm.name);
   } catch (error) {
     return res.status(400).json(error);
   }

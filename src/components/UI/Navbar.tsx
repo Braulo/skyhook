@@ -1,6 +1,14 @@
 import Link from 'next/link';
+import { useContext } from 'react';
+import { RealmApplicationContext } from 'state/context/realmApplicationContextProvider';
 
 const Navbar = () => {
+  const {
+    state: {
+      realmApplication: { displayName },
+    },
+  } = useContext(RealmApplicationContext);
+
   return (
     <>
       <nav
@@ -12,7 +20,7 @@ const Navbar = () => {
           </div>
         </div>
         <div className="flex">
-          <h1>Clinet Id</h1>
+          <h1>{displayName}</h1>
         </div>
       </nav>
     </>

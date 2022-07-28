@@ -4,8 +4,6 @@ import passport from 'passport';
 import { User } from '../entities/user.entity';
 
 export const createGoogleStrategy = async (clientId: string) => {
-  console.log('create test');
-
   const realmApplication = await RealmApplication.findOneOrFail({
     where: {
       clientId,
@@ -17,8 +15,6 @@ export const createGoogleStrategy = async (clientId: string) => {
     return (providerData.name = process.env.GoogleAuthProviderName || 'Google');
   });
 
-  console.log('google test', googleProviderConfig);
-
   const GoogleStrategyConfig = {
     clientID: googleProviderConfig?.key || '',
     clientSecret: googleProviderConfig?.secret || '',
@@ -26,9 +22,11 @@ export const createGoogleStrategy = async (clientId: string) => {
   };
 
   const verifyLogin = async (accessToken: string, refreshToken: string, profile: Profile, done: VerifyCallback) => {
-    const user = await User.createQueryBuilder('Users')
-      .where(`Users.email='${profile._json.email}'`)
-      .orWhere(`Users.externalProviderId='${profile.id}'`)
+    const user = await User.createQueryBuilder('user')
+      .leftJoinAndSelect('user.realmApplication', 'realmApplication')
+      .where(`realmApplication.clientId = '${clientId}'`)
+      .leftJoinAndSelect('realmApplication.realmApplicationURLs', 'realmApplicationURLs')
+      .andWhere(`user.email = '${profile._json.email}'`)
       .getOne();
 
     if (user) {

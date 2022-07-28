@@ -4,7 +4,6 @@ import { ExternalProvider } from '../entities/externalProvider.entity';
 // POST => /api/externalprovider
 export const addExternalProvider = async (req: Request, res: Response) => {
   const externalProvider: ExternalProvider = req.body;
-  console.log('body ', externalProvider);
 
   const newExternalProvider = ExternalProvider.create({
     realmApplication: externalProvider.realmApplication,

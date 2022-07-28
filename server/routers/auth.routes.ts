@@ -36,5 +36,7 @@ authRouter.post('/reset-password/:userid', resetPassword);
 
 authRouter.get('/checktoken', checkToken);
 
-// External Auth
+// External Auth (Google)
 authRouter.get('/external/google', createGoogleAuthStrategy, loginExternalUser);
+
+// External Auth (Twitter) TODO

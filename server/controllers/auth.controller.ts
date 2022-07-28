@@ -11,7 +11,6 @@ import passport from 'passport';
 import { MailOptions } from 'nodemailer/lib/json-transport';
 import { NodeMailerTransporter } from '..';
 
-//GET => /api/user/register/:realmApplicationId
 const registerUserInRealmApplication = async (req: Request, res: Response) => {
   const clientId = req.query.clientId as string;
   const { email, password, username } = req.body;
@@ -52,7 +51,6 @@ const registerUserInRealmApplication = async (req: Request, res: Response) => {
   }
 };
 
-// POST => /auth/login
 const loginUserForRealmApplication = async (req: Request, res: Response) => {
   const clientId = req.query.clientId as string;
 
@@ -93,7 +91,6 @@ const loginUserForRealmApplication = async (req: Request, res: Response) => {
   }
 };
 
-// POST => /auth/refreshAccessToken?realmApplicationId=foo
 const refreshAccessToken = async (req: Request, res: Response) => {
   const { refreshToken } = req.body;
   const clientId = req.query.clientId as string;
@@ -105,7 +102,6 @@ const refreshAccessToken = async (req: Request, res: Response) => {
       },
     });
 
-    // ToDo set 'supersecret' password to realmApplication column
     const decodedToken = jwt.verify(refreshToken, realmApplication.clientSecret) as RefreshTokenPayload;
 
     const user = await User.findOneOrFail(decodedToken.userId, {
@@ -127,7 +123,6 @@ const refreshAccessToken = async (req: Request, res: Response) => {
   }
 };
 
-// POST => /auth/logout?realmApplicationId=foo
 const logout = async (req: Request, res: Response) => {
   const { refreshToken } = req.body;
   const clientId = req.query.clientId as string;
@@ -156,11 +151,15 @@ const logout = async (req: Request, res: Response) => {
 
 // GET => /api/external/google
 const loginExternalUser = async (req: Request, res: Response) => {
+  const { clientId } = req.query;
   if (req.user) {
     try {
-      const user = await User.findOneOrFail((req.user as any).user.id, {
-        relations: ['realmApplication'],
-      });
+      const user = await User.createQueryBuilder('user')
+        .leftJoinAndSelect('user.realmApplication', 'realmApplication')
+        .where(`realmApplication.clientId = '${clientId}'`)
+        .leftJoinAndSelect('realmApplication.realmApplicationURLs', 'realmApplicationURLs')
+        .andWhere(`user.id = '${(req.user as any).user.id}'`)
+        .getOneOrFail();
 
       if (user.banned) {
         return res.status(400).json({ message: 'User has been banned for this Realm' });
@@ -186,7 +185,6 @@ const createGoogleAuthStrategy = async (req: Request, res: Response, next: NextF
   passport.authenticate(strategy, { scope: ['profile', 'email'] })(req, res, next);
 };
 
-// Sends the forgot password mail
 const forgotPassword = async (req: Request, res: Response, next: NextFunction) => {
   const { clientId } = req.query;
   const { email } = req.body;

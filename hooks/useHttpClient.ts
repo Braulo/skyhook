@@ -18,7 +18,6 @@ export const useHttpClient = (route: string) => {
 
   const post = async <T, V>(endpoint: string, data?: T) => {
     const response = await axios.post<V>(`${route}${endpoint}?clientId=${clientId}`, { ...data }).catch((err) => {
-      console.log('catch', err);
       throw err;
     });
     return response;

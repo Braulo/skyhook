@@ -20,7 +20,6 @@ const RequestPasswordForm = () => {
         }}
         onSubmit={async ({ email }, { setSubmitting, resetForm }) => {
           setLoading(true);
-          console.log('submit', email);
 
           setSubmitting(false);
           resetForm();

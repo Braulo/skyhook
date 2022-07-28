@@ -1,6 +1,8 @@
+import { useRouter } from 'next/router';
 import { useContext, useState } from 'react';
 import { RealmApplicationContext } from 'state/context/realmApplicationContextProvider';
 import { useHttpClient } from './useHttpClient';
+import axios from 'axios';
 
 export const useAuth = () => {
   const { post } = useHttpClient('/api/auth');
@@ -9,6 +11,8 @@ export const useAuth = () => {
   const {
     state: { redirectUri },
   } = useContext(RealmApplicationContext);
+
+  const router = useRouter();
 
   type tokenResponse = {
     accessToken: string;
@@ -50,10 +54,41 @@ export const useAuth = () => {
     return res.data;
   };
 
+  const forgotPassword = async (email: string) => {
+    setLoading(true);
+    const res = await post('/forgot-password', { email })
+      .catch((err) => {
+        console.log(err);
+        throw err;
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+
+    return res;
+  };
+
+  const resetPassword = async (password: string) => {
+    const { userId, resetPasswordToken } = router.query;
+    setLoading(true);
+    const res = await axios
+      .post(`/api/auth/reset-password/${userId}?resetPasswordToken=${resetPasswordToken}`, { password })
+      .catch((err) => {
+        throw err;
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+
+    return res;
+  };
+
   return {
     login,
     register,
     error,
     loading,
+    forgotPassword,
+    resetPassword,
   };
 };

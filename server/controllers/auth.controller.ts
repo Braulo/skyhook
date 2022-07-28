@@ -208,7 +208,8 @@ const forgotPassword = async (req: Request, res: Response, next: NextFunction) =
         userId: user.id,
         realmApplication: user.realmApplication.id,
         realmApplicationClientId: user.realmApplication.clientId,
-        redirectUrl: user.realmApplication.realmApplicationURLs[0].url,
+        redirectUrl: process.env.SkyhookUrl + '/auth/password/reset',
+        callbackUrl: user.realmApplication.realmApplicationURLs[0].url,
       },
       user.realmApplication.clientSecret + user.password,
       { expiresIn: '1d' },
@@ -245,7 +246,7 @@ const getResetPassword = async (req: Request, res: Response) => {
     ) as any;
 
     return res.redirect(
-      `${decodedResetPasswordToken.redirectUrl}/reset-password/${userid}?resetPasswordToken=${resetPasswordToken}`,
+      `${decodedResetPasswordToken.redirectUrl}?userId=${userid}&resetPasswordToken=${resetPasswordToken}`,
     );
   } catch (error) {
     return res.status(400).send('unvalid link');
@@ -256,6 +257,7 @@ const resetPassword = async (req: Request, res: Response) => {
   const { resetPasswordToken } = req.query as any;
   const { userid } = req.params;
   const { password } = req.body;
+
   try {
     const user = await User.findOneOrFail(userid, {
       relations: ['realmApplication'],

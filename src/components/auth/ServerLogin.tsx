@@ -3,9 +3,17 @@ import Input from '../UI/Input';
 import Button from '../UI/Button';
 import Link from 'next/link';
 import { useAuth } from 'hooks/useAuth';
+import { useContext } from 'react';
+import { RealmApplicationContext } from 'state/context/realmApplicationContextProvider';
 
 const ServerLogin = () => {
   const { login, error: authError, loading } = useAuth();
+  const {
+    state: {
+      realmApplication: { clientId },
+      redirectUri,
+    },
+  } = useContext(RealmApplicationContext);
 
   return (
     <>
@@ -54,7 +62,10 @@ const ServerLogin = () => {
             {errors.password && touched.password && errors.password}
             <h1>{authError}</h1>
             <div className="self-start mt-4">
-              <Link href={'/auth/password/request'} className="self-start mt-4">
+              <Link
+                href={`/auth/password/request?client_id=${clientId}&redirect_uri=${redirectUri}`}
+                className="self-start mt-4"
+              >
                 Forgot password?
               </Link>
             </div>

@@ -2,9 +2,11 @@ import { Formik } from 'formik';
 import Input from '../UI/Input';
 import Button from '../UI/Button';
 import { useAuth } from 'hooks/useAuth';
+import { useState } from 'react';
 
 const ServerRegister = () => {
   const { loading, register, error: authError } = useAuth();
+  const [registerMessage, setRegisterMessage] = useState('');
 
   return (
     <>
@@ -19,22 +21,31 @@ const ServerRegister = () => {
           const errors = {} as any;
           if (!email) {
             errors.email = 'Required';
+          } else if (
+            !email
+              .toLowerCase()
+              .match(
+                /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+              )
+          ) {
+            errors.email = 'Not a valid E-Mail';
           } else if (!password) {
             errors.password = 'Required';
           } else if (!username) {
             errors.username = 'Required';
           } else if (!passwordRepeat) {
             errors.passwordRepeat = 'Required';
+          } else if (password != passwordRepeat) {
+            errors.passwordRepeat = 'Passwords do not match';
           }
+
           return errors;
         }}
-        onSubmit={async ({ email, username, password, passwordRepeat }, { setSubmitting }) => {
+        onSubmit={async ({ email, username, password }, { setSubmitting }) => {
           try {
-            const res = await register(email, username, password);
-            console.log('res', res);
-          } catch (error) {
-            console.log('err', error);
-          }
+            await register(email, username, password);
+            setRegisterMessage('Successfully registered! you can now login!');
+          } catch (error) {}
 
           setSubmitting(false);
         }}
@@ -80,6 +91,7 @@ const ServerRegister = () => {
             />
             {errors.passwordRepeat && touched.passwordRepeat && errors.passwordRepeat}
             <h1>{authError}</h1>
+            <h1>{registerMessage}</h1>
             <Button type="submit" disabled={!isValid} showSpinner={loading}>
               Register
             </Button>

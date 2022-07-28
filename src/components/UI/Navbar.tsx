@@ -12,14 +12,12 @@ const Navbar = () => {
   return (
     <>
       <nav
-        className={`w-100 dark:bg-dark-secondary bg-light-secondary flex flex-wrap justify-center md:justify-between items-center p-4`}
+        className={`w-100 dark:bg-dark-secondary bg-light-secondary flex flex-wrap justify-center md:justify-between items-center gap-4 p-4`}
       >
-        <div className="">
-          <div className="text-2xl font-bold">
-            <Link href="/">Skyhook</Link>
-          </div>
+        <div className="text-2xl font-bold">
+          <Link href="/">Skyhook</Link>
         </div>
-        <div className="flex">
+        <div>
           <h1>{displayName}</h1>
         </div>
       </nav>

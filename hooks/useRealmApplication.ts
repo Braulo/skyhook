@@ -6,11 +6,13 @@ interface IInitialReducerRealmApp {
   realmApplication: { displayName: string; clientId: string };
   redirectUri: string;
   error: string;
+  loading: boolean;
 }
 const initialState: IInitialReducerRealmApp = {
   realmApplication: { clientId: '', displayName: '' },
   redirectUri: '',
   error: '',
+  loading: false,
 };
 
 const realmApplicationReducer = (
@@ -44,18 +46,22 @@ const realmApplicationReducer = (
         ...state,
         error: action.payload,
       };
+    case 'SET_LOADING':
+      return {
+        ...state,
+        loading: action.payload,
+      };
     default:
       return state;
   }
 };
 export const useRealmApplication = () => {
   const [state, dispatch] = useReducer(realmApplicationReducer, initialState);
-
   const { query } = useRouter();
-
   const { client_id, redirect_uri } = query as any;
 
   useEffect(() => {
+    setLoading(true);
     if (client_id && redirect_uri) {
       setRealmApplicationClientId(client_id);
       setRedirectURI(redirect_uri);
@@ -78,9 +84,9 @@ export const useRealmApplication = () => {
     const response = await axios
       .get<string>(`/api/realmapplication/client/${clientId}?clientId=${clientId}`)
       .catch(() => {
-        setError('Something went wrong');
-      });
-
+        setError('Application not found');
+      })
+      .finally(() => setLoading(false));
     dispatch({
       type: 'SET_DISPLAYNAME',
       payload: (response as any)?.data || '',
@@ -89,6 +95,10 @@ export const useRealmApplication = () => {
 
   const setError = (error: string) => {
     dispatch({ type: 'SET_ERROR', payload: error });
+  };
+
+  const setLoading = (loading: boolean) => {
+    dispatch({ type: 'SET_LOADING', payload: loading });
   };
 
   return {

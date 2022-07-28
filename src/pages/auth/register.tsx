@@ -6,17 +6,24 @@ import Link from 'next/link';
 import ServerRegister from 'src/components/auth/ServerRegister';
 import { useContext } from 'react';
 import { RealmApplicationContext } from 'state/context/realmApplicationContextProvider';
+import Spinner from 'src/components/UI/Spinner';
 
 const Register: NextPage = () => {
   const {
-    state: { error },
+    state: {
+      error,
+      redirectUri,
+      realmApplication: { clientId },
+      loading,
+    },
   } = useContext(RealmApplicationContext);
 
   return (
     <>
       <div className="flex flex-col justify-center items-center h-full">
+        {loading && <Spinner />}
         {error && <h1 className="text-3xl font-bold text-red-700">{error}</h1>}
-        {!error && (
+        {!error && !loading && (
           <Card>
             <h1 className="text-2xl font-bold mb-5">Register</h1>
             <ServerRegister />
@@ -30,7 +37,7 @@ const Register: NextPage = () => {
               <Divider />
             </div>
             <div className="self-start mt-5 ">
-              <Link href={'/auth/login'}>Click here to login</Link>
+              <Link href={`/auth/login?client_id=${clientId}&redirect_uri=${redirectUri}`}>Click here to login</Link>
             </div>
           </Card>
         )}

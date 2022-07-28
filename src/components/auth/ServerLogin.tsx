@@ -24,10 +24,8 @@ const ServerLogin = () => {
           return errors;
         }}
         onSubmit={async ({ email, password }, { setSubmitting }) => {
-          console.log('submit', email, password);
           try {
-            const response = await login(email, password);
-            console.log('res', response);
+            await login(email, password);
           } catch (error) {}
 
           setSubmitting(false);

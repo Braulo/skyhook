@@ -1,10 +1,14 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
+import { RealmApplicationContext } from 'state/context/realmApplicationContextProvider';
 import { useHttpClient } from './useHttpClient';
 
 export const useAuth = () => {
   const { post } = useHttpClient('/api/auth');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const {
+    state: { redirectUri },
+  } = useContext(RealmApplicationContext);
 
   type tokenResponse = {
     accessToken: string;
@@ -21,6 +25,11 @@ export const useAuth = () => {
       .finally(() => {
         setLoading(false);
       });
+
+    const { accessToken, refreshToken } = res.data;
+    if (accessToken && refreshToken) {
+      window.location.href = `${redirectUri}?accessToken=${accessToken}&refreshToken=${refreshToken}`;
+    }
 
     return res.data;
   };

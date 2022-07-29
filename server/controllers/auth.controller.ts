@@ -152,6 +152,7 @@ const logout = async (req: Request, res: Response) => {
 // GET => /api/external/google
 const loginExternalUser = async (req: Request, res: Response) => {
   const { clientId } = req.query;
+
   if (req.user) {
     try {
       const user = await User.createQueryBuilder('user')
@@ -208,7 +209,10 @@ const forgotPassword = async (req: Request, res: Response, next: NextFunction) =
         userId: user.id,
         realmApplication: user.realmApplication.id,
         realmApplicationClientId: user.realmApplication.clientId,
+        // this will redirect to the skyhook frontend client (with a reset password ui)
         redirectUrl: process.env.SkyhookUrl + '/auth/password/reset',
+        // once the password has successfully been reset, the callbackUrl will be called
+        // (example => 'http://localhost:4200/callback?accessToken=123&refreshToken=123)
         callbackUrl: user.realmApplication.realmApplicationURLs[0].url,
       },
       user.realmApplication.clientSecret + user.password,
@@ -232,6 +236,7 @@ const forgotPassword = async (req: Request, res: Response, next: NextFunction) =
 };
 
 const getResetPassword = async (req: Request, res: Response) => {
+  // This endpoint is to check if the resetPasswordToken is still valid (has not expired/ manipulated)
   const { resetPasswordToken } = req.query as any;
   const { userid } = req.params;
 
@@ -246,6 +251,7 @@ const getResetPassword = async (req: Request, res: Response) => {
     ) as any;
 
     return res.redirect(
+      // Redirect to the skyhook frontend and append the userId / resetPasswordToken to identify the user
       `${decodedResetPasswordToken.redirectUrl}?userId=${userid}&resetPasswordToken=${resetPasswordToken}`,
     );
   } catch (error) {

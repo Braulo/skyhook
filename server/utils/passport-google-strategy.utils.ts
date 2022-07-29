@@ -12,13 +12,16 @@ export const createGoogleStrategy = async (clientId: string) => {
   });
 
   const googleProviderConfig = realmApplication.externalProvider.find((providerData) => {
-    return (providerData.name = process.env.GoogleAuthProviderName || 'Google');
+    return (providerData.name = 'Google');
   });
 
   const GoogleStrategyConfig = {
     clientID: googleProviderConfig?.key || '',
     clientSecret: googleProviderConfig?.secret || '',
-    callbackURL: `${process.env.GoogleAuthCallbackURI}${clientId}`,
+    // This will be called by goole once the login is successfull (should be added to the Google Callback URI's)
+    // This endpoint then will generate the accesstoken / refreshToken
+    // and redirect to the realm application client callback url
+    callbackURL: `${process.env.SkyhookUrl}/api/auth/external/google?clientId=${clientId}`,
   };
 
   const verifyLogin = async (accessToken: string, refreshToken: string, profile: Profile, done: VerifyCallback) => {
@@ -29,6 +32,7 @@ export const createGoogleStrategy = async (clientId: string) => {
       .andWhere(`user.email = '${profile._json.email}'`)
       .getOne();
 
+    // If the user is already created we can just redirect them to the client
     if (user) {
       return done(null, { user, callbackUrl: realmApplication.realmApplicationURLs[0].url });
     }
@@ -38,13 +42,16 @@ export const createGoogleStrategy = async (clientId: string) => {
       username: profile.displayName,
       realmApplication: realmApplication,
       externalProviderId: profile.id,
-      externalProviderName: process.env.GoogleAuthProviderName || 'Google',
+      externalProviderName: 'Google',
     });
 
     const savedUser = await User.save(newUser).catch((err) => {
       return done(err, undefined);
     });
 
+    // callbackUrl = is the realm applicattion endpoint where we want to send the user to
+    // once the Google Login was successfull (this url gets the AccessToken / RefreshToken)
+    // 'http://localhost:4200/callback?accessToken=123&refreshToken=123' for example
     return done(null, { user: savedUser, callbackUrl: realmApplication.realmApplicationURLs[0].url });
   };
 

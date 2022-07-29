@@ -6,20 +6,12 @@ const getAllRealms = async (req: Request, res: Response) => {
   console.log('get all');
 
   const realms: Realm[] = await Realm.find({ relations: ['realmApplications', 'realmRoles'] });
-  // const realms: Realm[] = await Realm.createQueryBuilder('realm')
-  //   .leftJoinAndSelect('realm.realmApplications', 'realmApplication')
-  //   .where(`realmApplication.realmId = realm.id`)
-  //   .leftJoinAndSelect('realmApplication.externalProvider', 'externalProvider')
-  //   .leftJoinAndSelect('realm.realmRoles', 'realmRoles')
-  //   .getMany();
 
   console.log('realms', realms);
 
   res.status(200).json(realms);
 };
 
-// GET => /api/realm/:id
-// ToDo
 const getRealmById = async (req: Request, res: Response) => {
   const { id } = req.params;
 

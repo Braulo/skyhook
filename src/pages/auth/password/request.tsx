@@ -5,6 +5,7 @@ import { IoMdArrowRoundBack } from 'react-icons/io';
 import { useRouter } from 'next/router';
 import { useContext } from 'react';
 import { RealmApplicationContext } from 'state/context/realmApplicationContextProvider';
+import Spinner from 'src/components/UI/Spinner';
 
 const RequestPassword: NextPage = () => {
   const router = useRouter();
@@ -19,16 +20,20 @@ const RequestPassword: NextPage = () => {
   return (
     <>
       <div className="flex flex-col justify-center items-center h-full">
-        <Card>
-          <div className="flex justify-center items-center mb-5 gap-4">
-            <IoMdArrowRoundBack
-              className="h-7 w-7 cursor-pointer"
-              onClick={() => router.push(`/auth/login?client_id=${clientId}&redirect_uri=${redirectUri}`)}
-            />
-            <h1 className="text-2xl font-bold">Request password reset</h1>
-          </div>
-          <RequestPasswordForm />
-        </Card>
+        {clientId && redirectUri ? (
+          <Card>
+            <div className="flex justify-center items-center mb-5 gap-4">
+              <IoMdArrowRoundBack
+                className="h-7 w-7 cursor-pointer"
+                onClick={() => router.push(`/auth/login?client_id=${clientId}&redirect_uri=${redirectUri}`)}
+              />
+              <h1 className="text-2xl font-bold">Request password reset</h1>
+            </div>
+            <RequestPasswordForm />
+          </Card>
+        ) : (
+          <Spinner />
+        )}
       </div>
     </>
   );

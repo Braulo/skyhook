@@ -67,9 +67,9 @@ const ResetPasswordForm: FC<IResetPasswordForm> = ({ clientId, redirectUri }) =>
             </Button>
             {!loading && message && <h1>{message}</h1>}
             {!loading && message && (
-              <Button>
-                <Link href={`/auth/login?client_id=${clientId}&redirect_uri=${redirectUri}`}>Login</Link>
-              </Button>
+              <Link href={`/auth/login?client_id=${clientId}&redirect_uri=${redirectUri}`}>
+                <Button type={'button'}>Login</Button>
+              </Link>
             )}
           </form>
         )}

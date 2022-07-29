@@ -11,7 +11,7 @@ dotenv.config();
 export const connection = async () => {
   return createConnection({
     type: 'mysql',
-    host: 'localhost',
+    host: process.env.NODE_ENV == 'production' ? 'database' : 'localhost',
     port: 3306,
     username: process.env.MYSQL_USER,
     password: process.env.MYSQL_PASSWORD,

@@ -1,6 +1,7 @@
-version: '2.1'
+version: '3.1'
 services:
   database:
+    container_name: skyhook-database-container
     image: mysql:8.0
     restart: always
     ports:
@@ -11,7 +12,10 @@ services:
       - .env
     healthcheck:
       test: ['CMD', 'curl', '-f', 'localhost:3306']
+    volumes:
+      - mysql-data:/var/lib/mysql
   skyhook-server:
+    container_name: skyhook-server-container
     build: .
     ports:
       - '${PORT}:${PORT}'
@@ -20,3 +24,5 @@ services:
     depends_on:
       database:
         condition: service_healthy
+volumes:
+  mysql-data:
